@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+import math
 
 from hardware import parse_hw_file
 from tree import parse_tree_file
@@ -29,13 +30,47 @@ def de_casteljau(t, coefs):
         return de_casteljau(t, [lerpP(t, x, y) for x, y in zip(coefs[:-1], coefs[1:])])
 
 
-def cubic_bezier(x0, coefs):
-    for t in range(0, 250, 1):
-        t = t / 250
-        x, y = de_casteljau(t, coefs)
-        if abs(x - x0) < 0.01:
-            return x, y
-    return 1, 1
+def compute_roots_cubic(a, b, c, d):
+    b /= a
+    c /= a
+    d /= a
+
+    p = (3 * c - b ** 2) / 3
+    q = (2 * b * b ** 2 - 9 * b * c + 27 * d) / 27
+
+    if p == 0:
+        return [math.pow(-q, 1 / 3)]
+    elif q == 0:
+        return [math.sqrt(-p), -math.sqrt(-p)]
+    else:
+        discriminant = math.pow(q / 2, 2) + math.pow(p / 3, 3)
+        if discriminant == 0:
+            return [math.pow(q / 2, 1 / 3) - b / 3]
+        elif discriminant > 0:
+            return [math.pow(-(q / 2) + math.sqrt(discriminant), 1 / 3) - math.pow((q / 2) + math.sqrt(discriminant), 1 / 3) - b / 3]
+        else:
+            r = math.sqrt(math.pow(-(p / 3), 3))
+            phi = math.acos(-(q / (2 * math.sqrt(math.pow(-(p / 3), 3)))))
+            s = 2 * math.pow(r, 1 / 3)
+            return [
+                s * math.cos(phi / 3) - b / 3,
+                s * math.cos((phi + 2 * math.pi) / 3) - b / 3,
+                s * math.cos((phi + 4 * math.pi) / 3) - b / 3
+            ]
+
+
+def compute_cubic_bezier(p1, p2, x0):
+    p0 = -x0
+    p1 -= x0
+    p2 -= x0
+    p3 = 1 - x0
+
+    a = p3 - 3 * p2 + 3 * p1 - p0
+    b = 3 * p2 - 6 * p1 + 3 * p0
+    c = 3 * p1 - 3 * p0
+    d = p0
+    roots = compute_roots_cubic(a, b, c, d)
+    return [r for r in roots if r >= 0 and r <= 1]
 
 
 def compute_transition_function_at(transition, t):
@@ -52,8 +87,10 @@ def compute_transition_function_at(transition, t):
     elif transition.function == 'cubic-bezier':
         p1, p2 = transition.params
     coefs = (0, 0), p1, p2, (1, 1)
-    t /= transition.duration
-    x, y = cubic_bezier(t, coefs)
+    x0 = min(1, t / transition.duration)
+
+    x = compute_cubic_bezier(p1[0], p2[0], x0)[-1]
+    y = de_casteljau(x, coefs)[1]
     return y
 
 

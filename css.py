@@ -1,7 +1,8 @@
 import cssutils
 from collections import namedtuple
+import re
 
-Transition = namedtuple('Transition', ['duration', 'function'])
+Transition = namedtuple('Transition', ['duration', 'function', 'params'])
 
 
 def parse_rgb(rgb):
@@ -21,18 +22,25 @@ def parse_transitions(style):
         if prop == "transition":
             # e.g. "transition: color 5s"
             # e.g. "transition: color 0.5s linear"
-            values = style[prop].split(" ")
-            if len(values) >= 1:
-                target_prop = values[0]
-                if len(values) >= 2:
-                    duration = parse_duration(values[1])
+            match = re.match(r'([\w-]*) (\d+(s|ms))( (.*))?', style[prop])
+            groups = match.groups()
+            if len(groups) >= 1:
+                target_prop = groups[0]
+                if len(groups) >= 2:
+                    duration = parse_duration(groups[1])
                 else:
                     duration = 0
-                if len(values) >= 3:
-                    function = values[2]
+                params = []
+                if len(groups) >= 5:
+                    if not groups[4].startswith('cubic-bezier'):
+                        function = groups[4]
+                    else:
+                        function = 'cubic-bezier'
+                        params = [float(x.strip()) for x in groups[4].split('(')[1].split(')')[0].split(',')]
+                        params = [[params[0], params[1]], [params[2], params[3]]]
                 else:
                     function = 'ease'
-                transitions[target_prop] = Transition(duration=duration, function=function)
+                transitions[target_prop] = Transition(duration=duration, function=function, params=params)
     return transitions
 
 
