@@ -1,0 +1,9 @@
+{
+	"left": {
+		"color": [1, 2, 3],
+		"rotation": 4
+	},
+	"right": {
+		"color": [5, 6, 7]
+	}
+}

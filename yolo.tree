@@ -1,0 +1,10 @@
+{
+	"mygroup": {
+		"children": {
+			"left": {},
+			"right": {
+				"class": "transition"
+			}
+		}
+	}
+}
