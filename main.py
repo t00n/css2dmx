@@ -3,51 +3,47 @@ from datetime import datetime
 from time import sleep
 
 from hardware import parse_hw_file
-from tree import parse_tree_file, walk_tree
-from css import parse_css_file, get_css_style
-
-
-def parse_rgb(rgb):
-    return [int(x.strip()) for x in rgb.split("rgb(")[1].split(")")[0].split(",")]
-
-
-def color_to_dmx(color, hw):
-    return list(zip(hw, color))
-
-
-def transition_to_dmx(style):
-    pass
+from tree import parse_tree_file, walk_tree, select_nodes, set_node_style
+from css import parse_css_file, parse_rgb, parse_duration
 
 
 def apply_style(tree, css):
-    for id, node in walk_tree(tree):
-        node['style'] = {}
-        for style in chain(*[get_css_style(css, id=id), *[get_css_style(css, klass=k) for k in node.get('class', "").split(" ")]]):
-            node['style'][style.name] = style.value
+    for rule in css.cssRules:
+        for selector in rule.selectorList:
+            for id, node in select_nodes(selector.selectorText, tree):
+                set_node_style(node, rule.style)
 
 
 def compute_transitions(style):
     transitions = {}
-    for s in style:
-        if s == "transition":
-            prop, duration = style[s].split(" ")
-            transitions[prop] = float(duration[:-1])
+    for prop in style:
+        if prop == "transition":
+            target_prop, duration = style[prop].split(" ")
+            transitions[target_prop] = parse_duration(duration)
     return transitions
+
+
+def compute_style(node, t):
+    transitions = compute_transitions(node['style'])
+    style = {}
+    for prop in node['style']:
+        if prop == "color":
+            color = parse_rgb(node['style'][prop])
+            if prop in transitions:
+                ratio = t / transitions[prop]
+                color = [max(0, min(255, int(ratio * x))) for x in color]
+                style["color"] = color
+    return style
 
 
 def compute_dmx(tree, hw, t):
     dmx = []
     for id, node in walk_tree(tree):
         if id in hw:
-            transitions = compute_transitions(node['style'])
-            for style in node['style']:
-                if style in hw[id]:
-                    if style == "color":
-                        color = parse_rgb(node['style'][style])
-                        if style in transitions:
-                            ratio = t / transitions[style]
-                            color = [max(0, min(255, int(ratio * x))) for x in color]
-                        dmx.extend(list(zip(hw[id][style], color)))
+            style = compute_style(node, t)
+            for prop, val in style.items():
+                if prop in hw[id]:
+                    dmx.extend(list(zip(hw[id][prop], val)))
     return sorted(dmx, key=lambda x: x[0])
 
 
@@ -73,19 +69,20 @@ def trange(start=None, end=None, interval=1):
         i += 1
 
 
-def write(state):
+def send_dmx(state):
     print(state)
 
 
 def run(hw, tree, css):
     apply_style(tree, css)
+    print(tree)
     old_state = None
     now = datetime.now()
     for t in trange(interval=0.1):
         state = compute_dmx(tree, hw, t.timestamp() - now.timestamp())
         if state != old_state:
             old_state = state
-            write(state)
+            send_dmx(state)
 
 if __name__ == '__main__':
     import sys

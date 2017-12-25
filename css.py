@@ -1,16 +1,15 @@
 import cssutils
 
 
-def get_css_style(css, id=None, klass=None):
-    if id is not None:
-        for rule in css.cssRules:
-            if rule.type == 1 and rule.selectorText[0] == "#" and rule.selectorText[1:] == id:
-                return rule.style
-    elif klass is not None:
-        for rule in css.cssRules:
-            if rule.type == 1 and rule.selectorText[0] == "." and rule.selectorText[1:] == klass:
-                return rule.style
-    return []
+def parse_rgb(rgb):
+    return [int(x.strip()) for x in rgb.split("rgb(")[1].split(")")[0].split(",")]
+
+
+def parse_duration(duration):
+    if duration[-2:] == 'ms':
+        return float(duration[:-2]) / 1000
+    elif duration[-1] == 's':
+        return float(duration[:-1])
 
 
 def parse_css_file(filename):

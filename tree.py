@@ -1,6 +1,21 @@
 import json
 
 
+def set_node_style(node, style):
+    if 'style' not in node:
+        node['style'] = {}
+    for prop in style:
+        node['style'][prop.name] = prop.value
+
+
+def select_nodes(path, tree):
+    for id, node in walk_tree(tree):
+        if path[0] == "#" and path[1:] == id:
+            yield id, node
+        elif path[0] == "." and path[1:] in node.get('class', "").split(" "):
+            yield id, node
+
+
 def walk_node(id, node):
     children = node.get('children', {})
     yield id, node
