@@ -53,9 +53,40 @@ def parse_transitions(style):
     return transitions
 
 
+CSS = namedtuple('CSS', ['rules'])
+Rule = namedtuple('Rule', ['selectors', 'properties'])
+Selector = namedtuple('Selector', ['type', 'value'])
+Property = namedtuple('Property', ['name', 'value'])
+
+IMPLEMENTED_PROPERTIES = ['color', 'transition']
+
+
+def parse_rules(css):
+    rules = []
+    for r in css.cssRules:
+        if r.type == 1:  # style rule
+            selectors = []
+            for s in r.selectorList:
+                if s.selectorText[0] == "#":
+                    typ = 'id'
+                elif s.selectorText[0] == '.':
+                    typ = 'class'
+                else:
+                    raise NotImplementedError("'{}' selector type is not implemented".format(s.selectorText))
+                value = s.selectorText[1:]
+                selectors.append(Selector(type=typ, value=value))
+            properties = []
+            for prop in IMPLEMENTED_PROPERTIES:
+                if prop in r.style:
+                    properties.append(Property(name=prop, value=r.style[prop]))
+            rules.append(Rule(selectors=selectors, properties=properties))
+    return rules
+
+
 def parse_css_file(filename):
     css = cssutils.parseFile(filename)
-    return css
+    rules = parse_rules(css)
+    return CSS(rules=rules)
 
 if __name__ == '__main__':
     res = parse_css_file("yolo.css")

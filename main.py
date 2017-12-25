@@ -7,10 +7,10 @@ from utils import trange, compute_cubic_bezier, de_casteljau
 
 
 def apply_style(tree, css):
-    for rule in css.cssRules:
-        for selector in rule.selectorList:
-            for node in tree.select(selector.selectorText):
-                for prop in rule.style:
+    for rule in css.rules:
+        for selector in rule.selectors:
+            for node in tree.select(selector):
+                for prop in rule.properties:
                     node.add_style(prop.name, prop.value)
 
 

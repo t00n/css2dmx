@@ -16,11 +16,11 @@ class Node:
         for child in self:
             yield from child.walk()
 
-    def select(self, path):
+    def select(self, selector):
         for node in self.walk():
-            if path[0] == "#" and path[1:] == node.id:
+            if selector.type == 'id' and selector.value == node.id:
                 yield node
-            elif path[0] == "." and path[1:] in node.klass:
+            elif selector.type == 'class' and selector.value in node.klass:
                 yield node
 
     def __iter__(self):
