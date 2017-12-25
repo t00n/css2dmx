@@ -44,6 +44,7 @@ def parse_device(name, desc):
 def parse_hw(root):
     if not isinstance(root, dict):
         raise Exception("Expected a dict on root-level, got {}".format(root))
+    # checks that addresses are unique and issues a WARNING if they aren't
     addresses = defaultdict(set)
     for name, desc in root.items():
         device_addresses = parse_device(name, desc)
