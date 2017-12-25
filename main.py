@@ -35,8 +35,8 @@ def compute_transition_function_at(transition, t):
     return y
 
 
-def compute_color(color, ratio):
-    return [max(0, min(255, int(ratio * x))) for x in color]
+def compute_prop_with_ratio(src, target, ratio):
+    return [int(src[i] + (target[i] - src[i]) * ratio) for i in range(len(src))]
 
 
 def compute_style(node, t):
@@ -44,11 +44,14 @@ def compute_style(node, t):
     style = {}
     for prop in node.style:
         if prop == "color":
-            color = parse_rgb(node.style[prop])
-            if prop in transitions:
-                ratio = compute_transition_function_at(transitions[prop], t)
-                color = compute_color(color, ratio)
-            style["color"] = color
+            src = [0, 0, 0]
+            target = parse_rgb(node.style[prop])
+        if prop in transitions:
+            ratio = compute_transition_function_at(transitions[prop], t)
+        else:
+            ratio = 1
+        target = compute_prop_with_ratio(src, target, ratio)
+        style[prop] = target
     return style
 
 
