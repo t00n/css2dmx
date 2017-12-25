@@ -3,15 +3,16 @@ from datetime import datetime
 from time import sleep
 
 from hardware import parse_hw_file
-from tree import parse_tree_file, walk_tree, select_nodes, set_node_style
+from tree import parse_tree_file
 from css import parse_css_file, parse_rgb, parse_duration
 
 
 def apply_style(tree, css):
     for rule in css.cssRules:
         for selector in rule.selectorList:
-            for id, node in select_nodes(selector.selectorText, tree):
-                set_node_style(node, rule.style)
+            for node in tree.select(selector.selectorText):
+                for prop in rule.style:
+                    node.add_style(prop.name, prop.value)
 
 
 def compute_transitions(style):
@@ -24,11 +25,11 @@ def compute_transitions(style):
 
 
 def compute_style(node, t):
-    transitions = compute_transitions(node['style'])
+    transitions = compute_transitions(node.style)
     style = {}
-    for prop in node['style']:
+    for prop in node.style:
         if prop == "color":
-            color = parse_rgb(node['style'][prop])
+            color = parse_rgb(node.style[prop])
             if prop in transitions:
                 ratio = t / transitions[prop]
                 color = [max(0, min(255, int(ratio * x))) for x in color]
@@ -38,12 +39,12 @@ def compute_style(node, t):
 
 def compute_dmx(tree, hw, t):
     dmx = []
-    for id, node in walk_tree(tree):
-        if id in hw:
+    for node in tree.walk():
+        if node.id in hw:
             style = compute_style(node, t)
             for prop, val in style.items():
-                if prop in hw[id]:
-                    dmx.extend(list(zip(hw[id][prop], val)))
+                if prop in hw[node.id]:
+                    dmx.extend(list(zip(hw[node.id][prop], val)))
     return sorted(dmx, key=lambda x: x[0])
 
 

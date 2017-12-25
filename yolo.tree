@@ -1,6 +1,8 @@
 {
-	"left": {},
-	"right": {
-		"class": "transition"
+	"children": {
+		"left": {},
+		"right": {
+			"class": "transition"
+		}
 	}
 }
