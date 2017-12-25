@@ -1,10 +1,6 @@
 {
-	"mygroup": {
-		"children": {
-			"left": {},
-			"right": {
-				"class": "transition"
-			}
-		}
+	"left": {},
+	"right": {
+		"class": "transition"
 	}
 }
