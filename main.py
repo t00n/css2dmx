@@ -32,7 +32,7 @@ def compute_style(node, t):
             if prop in transitions:
                 ratio = t / transitions[prop]
                 color = [max(0, min(255, int(ratio * x))) for x in color]
-                style["color"] = color
+            style["color"] = color
     return style
 
 
@@ -75,7 +75,6 @@ def send_dmx(state):
 
 def run(hw, tree, css):
     apply_style(tree, css)
-    print(tree)
     old_state = None
     now = datetime.now()
     for t in trange(interval=0.1):
