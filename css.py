@@ -14,6 +14,15 @@ def parse_duration(duration):
         return float(duration[:-2]) / 1000
     elif duration[-1] == 's':
         return float(duration[:-1])
+    else:
+        raise Exception("Expected a duration, got {}".format(duration))
+
+
+def parse_angle(angle):
+    if angle[-3:] == 'deg':
+        return float(angle[:-3])
+    else:
+        raise Exception("Expected an angle, got {}".format(angle))
 
 
 def parse_transitions(style):
