@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from hardware import parse_hw_file
 from tree import parse_tree_file
@@ -14,9 +14,47 @@ def apply_style(tree, css):
                     node.add_style(prop.name, prop.value)
 
 
+def lerp(t, a, b):
+    return t * b + (1 - t) * a
+
+
+def lerpP(t, zero, one):
+    return lerp(t, zero[0], one[0]), lerp(t, zero[1], one[1])
+
+
+def de_casteljau(t, coefs):
+    if len(coefs) == 1:
+        return coefs[0]
+    else:
+        return de_casteljau(t, [lerpP(t, x, y) for x, y in zip(coefs[:-1], coefs[1:])])
+
+
+def cubic_bezier(x0, coefs):
+    for t in range(0, 250, 1):
+        t = t / 250
+        x, y = de_casteljau(t, coefs)
+        if abs(x - x0) < 0.01:
+            return x, y
+    return 1, 1
+
+
 def compute_transition_function_at(transition, t):
-    # linear
-    return t / transition.duration
+    if transition.function == 'ease':
+        p1, p2 = (0.25, 0.1), (0.25, 1)
+    elif transition.function == 'ease-in':
+        p1, p2 = (0.42, 0), (1, 1)
+    elif transition.function == 'ease-out':
+        p1, p2 = (0, 0), (0.58, 1)
+    elif transition.function == 'ease-in-out':
+        p1, p2 = (0.42, 0), (0.58, 1)
+    elif transition.function == 'linear':
+        p1, p2 = (0, 0), (1, 1)
+    elif transition.function == 'cubic-bezier':
+        p1, p2 = transition.params
+    coefs = (0, 0), p1, p2, (1, 1)
+    t /= transition.duration
+    x, y = cubic_bezier(t, coefs)
+    return y
 
 
 def compute_color(color, ratio):
@@ -55,7 +93,7 @@ def run(hw, tree, css):
     apply_style(tree, css)
     old_state = None
     now = datetime.now()
-    for t in trange(interval=0.1):
+    for t in trange(interval=0.01):
         state = compute_dmx(tree, hw, t.timestamp() - now.timestamp())
         if state != old_state:
             old_state = state
