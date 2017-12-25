@@ -33,14 +33,14 @@ def parse_transitions(style):
             # e.g. "transition: color 0.5s linear"
             match = re.match(r'([\w-]*) (\d+(s|ms))( (.*))?', style[prop])
             groups = match.groups()
-            if len(groups) >= 1:
+            if groups[0] is not None:
                 target_prop = groups[0]
-                if len(groups) >= 2:
+                if groups[1] is not None:
                     duration = parse_duration(groups[1])
                 else:
                     duration = 0
                 params = []
-                if len(groups) >= 5:
+                if groups[4] is not None:
                     if not groups[4].startswith('cubic-bezier'):
                         function = groups[4]
                     else:
