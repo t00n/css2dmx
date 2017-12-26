@@ -13,3 +13,12 @@
 .transition {
 	transition: color 1s;
 }
+
+@keyframes red2green {
+	0%, 100% {
+		color: rgb(255, 0, 0);
+	}
+	50% {
+		color: rgb(0, 255, 0);
+	}
+}
