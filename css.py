@@ -31,11 +31,11 @@ TIMING_FUNCTIONS = ["ease", "linear", "ease-in", "ease-out", "ease-in-out", "cub
 
 
 def parse_timing_function(function):
-    match = re.match(r'\A([a-zA-Z-]+)(\(\w+(?:,\w+)*\))?\Z', function)
+    match = re.match(r'\A([a-zA-Z-]+)(\(\w+(?:, \w+)*\))?\Z', function)
     groups = match.groups()
     if groups[0] is not None and groups[0] in TIMING_FUNCTIONS:
         name = groups[0]
-        params = [parse_time(x.strip()) for x in groups[1].split(',')] if groups[1] is not None else []
+        params = [float(x.strip()) for x in groups[1][1:-1].split(',')] if groups[1] is not None else []
         return Function(name=name, params=params)
     else:
         raise Exception("Expected timing function, got '{}'".format(function))

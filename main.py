@@ -14,22 +14,26 @@ def apply_style(tree, css):
                     node.add_style(prop.name, prop.value)
 
 
-def compute_transition_function_at(transition, t):
-    if transition.function.name == 'ease':
+def get_bezier_coefs(function):
+    if function.name == 'ease':
         p1, p2 = (0.25, 0.1), (0.25, 1)
-    elif transition.function.name == 'ease-in':
+    elif function.name == 'ease-in':
         p1, p2 = (0.42, 0), (1, 1)
-    elif transition.function.name == 'ease-out':
+    elif function.name == 'ease-out':
         p1, p2 = (0, 0), (0.58, 1)
-    elif transition.function.name == 'ease-in-out':
+    elif function.name == 'ease-in-out':
         p1, p2 = (0.42, 0), (0.58, 1)
-    elif transition.function.name == 'linear':
+    elif function.name == 'linear':
         p1, p2 = (0, 0), (1, 1)
-    elif transition.function.name == 'cubic-bezier':
-        p1, p2 = (transition.params[0], transition.params[1]), (transition.params[2], transition.params[3])
+    elif function.name == 'cubic-bezier':
+        p1, p2 = (function.params[0], function.params[1]), (function.params[2], function.params[3])
+    return p1, p2
+
+
+def compute_transition_function_at(transition, t):
+    p1, p2 = get_bezier_coefs(transition.function)
     coefs = (0, 0), p1, p2, (1, 1)
     x0 = min(1, t / transition.duration)
-
     x = compute_cubic_bezier(p1[0], p2[0], x0)[-1]
     y = de_casteljau(x, coefs)[1]
     return y
