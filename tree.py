@@ -27,7 +27,14 @@ class Node:
         yield from self.children
 
     def __str__(self):
-        return "<Node id={} children={} klass={} style={}>".format(self.id, list(self.children.keys()), self.klass, self.style)
+        return "<Node id={} children={} klass={} style={}>".format(self.id, [c.id for c in self.children], self.klass, self.style)
+
+    def print(self, level=0):
+        if level != 0:
+            print(' ' * level + '└', end="")
+        print(str(self))
+        for child in self.children:
+            child.print(level + 1)
 
 
 def parse_node(id, node):

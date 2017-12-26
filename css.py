@@ -9,7 +9,7 @@ def parse_rgb(rgb):
     return [int(x.strip()) for x in rgb.split("rgb(")[1].split(")")[0].split(",")]
 
 
-def parse_duration(duration):
+def parse_time(duration):
     if duration[-2:] == 'ms':
         return float(duration[:-2]) / 1000
     elif duration[-1] == 's':
@@ -25,7 +25,42 @@ def parse_angle(angle):
         raise Exception("Expected an angle, got {}".format(angle))
 
 
-Transition = namedtuple('Transition', ['duration', 'function', 'params'])
+Function = namedtuple('Function', ['name', 'params'])
+
+TIMING_FUNCTIONS = ["ease", "linear", "ease-in", "ease-out", "ease-in-out", "cubic-bezier"]
+
+
+def parse_timing_function(function):
+    match = re.match(r'\A([a-zA-Z-]+)(\(\w+(?:,\w+)*\))?\Z', function)
+    groups = match.groups()
+    if groups[0] is not None and groups[0] in TIMING_FUNCTIONS:
+        name = groups[0]
+        params = [parse_time(x.strip()) for x in groups[1].split(',')] if groups[1] is not None else []
+        return Function(name=name, params=params)
+    else:
+        raise Exception("Expected timing function, got '{}'".format(function))
+
+
+def parse_iteration_count(iteration):
+    if iteration == 'infinite':
+        return iteration
+    else:
+        try:
+            return int(iteration)
+        except ValueError:
+            raise Exception("Expected a number or 'infinite' for iteration-count, got {}".format(iteration))
+
+DIRECTIONS = ['normal', 'reverse', 'alternate', 'alternate-reverse']
+
+
+def parse_direction(direction):
+    if direction in DIRECTIONS:
+        return direction
+    else:
+        raise Exception("Expected direction, got '{}'".format(direction))
+
+
+Transition = namedtuple('Transition', ['duration', 'function'])
 
 
 def parse_transitions(style):
@@ -39,21 +74,32 @@ def parse_transitions(style):
             if groups[0] is not None:
                 target_prop = groups[0]
                 if groups[1] is not None:
-                    duration = parse_duration(groups[1])
+                    duration = parse_time(groups[1])
                 else:
                     duration = 0
-                params = []
-                if groups[2] is not None:
-                    if not groups[2].startswith('cubic-bezier'):
-                        function = groups[2]
-                    else:
-                        function = 'cubic-bezier'
-                        params = [float(x.strip()) for x in groups[2].split('(')[1].split(')')[0].split(',')]
-                        params = [[params[0], params[1]], [params[2], params[3]]]
-                else:
-                    function = 'ease'
-                transitions[target_prop] = Transition(duration=duration, function=function, params=params)
+                function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
+                transitions[target_prop] = Transition(duration=duration, function=function)
     return transitions
+
+Animation = namedtuple('Animation', ['duration', 'function', 'delay', 'iteration', 'direction'])
+
+
+def parse_animations(style):
+    animations = {}
+    for prop in style:
+        if prop == "animation":
+            # e.g. "red2green 5s ease 0s infinite alternate"
+            match = re.match(r'(\w+) (\d+m?s) (.+) (\d+m?s) (.+) (.+)', style[prop])
+            groups = match.groups()
+            if groups[0] is not None:
+                target_prop = groups[0]
+                duration = parse_time(groups[1]) if groups[1] is not None else 0
+                function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
+                delay = parse_time(groups[3]) if groups[3] is not None else 0
+                iteration = parse_iteration_count(groups[4]) if groups[4] is not None else 1
+                direction = parse_direction(groups[5]) if groups[5] is not None else 'normal'
+                animations[target_prop] = Animation(duration=duration, function=function, delay=delay, iteration=iteration, direction=direction)
+    return animations
 
 
 CSS = namedtuple('CSS', ['rules', 'keyframes'])
@@ -61,7 +107,7 @@ Rule = namedtuple('Rule', ['selectors', 'properties'])
 Selector = namedtuple('Selector', ['type', 'value'])
 Property = namedtuple('Property', ['name', 'value'])
 
-IMPLEMENTED_PROPERTIES = ['color', 'transition']
+IMPLEMENTED_PROPERTIES = ['color', 'transition', 'animation']
 
 
 def parse_properties(style):

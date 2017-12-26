@@ -2,7 +2,7 @@ from datetime import datetime
 
 from hardware import parse_hw_file
 from tree import parse_tree_file
-from css import parse_css_file, parse_rgb, parse_transitions
+from css import parse_css_file, parse_rgb, parse_transitions, parse_animations
 from utils import trange, compute_cubic_bezier, de_casteljau
 
 
@@ -15,18 +15,18 @@ def apply_style(tree, css):
 
 
 def compute_transition_function_at(transition, t):
-    if transition.function == 'ease':
+    if transition.function.name == 'ease':
         p1, p2 = (0.25, 0.1), (0.25, 1)
-    elif transition.function == 'ease-in':
+    elif transition.function.name == 'ease-in':
         p1, p2 = (0.42, 0), (1, 1)
-    elif transition.function == 'ease-out':
+    elif transition.function.name == 'ease-out':
         p1, p2 = (0, 0), (0.58, 1)
-    elif transition.function == 'ease-in-out':
+    elif transition.function.name == 'ease-in-out':
         p1, p2 = (0.42, 0), (0.58, 1)
-    elif transition.function == 'linear':
+    elif transition.function.name == 'linear':
         p1, p2 = (0, 0), (1, 1)
-    elif transition.function == 'cubic-bezier':
-        p1, p2 = transition.params
+    elif transition.function.name == 'cubic-bezier':
+        p1, p2 = (transition.params[0], transition.params[1]), (transition.params[2], transition.params[3])
     coefs = (0, 0), p1, p2, (1, 1)
     x0 = min(1, t / transition.duration)
 
@@ -41,6 +41,7 @@ def compute_prop_with_ratio(src, target, ratio):
 
 def compute_style(node, t):
     transitions = parse_transitions(node.style)
+    animations = parse_animations(node.style)
     style = {}
     for prop in node.style:
         if prop == "color":
@@ -72,6 +73,7 @@ def send_dmx(state):
 
 def run(hw, tree, css):
     apply_style(tree, css)
+    tree.print()
     old_state = None
     now = datetime.now()
     for t in trange(interval=0.01):
