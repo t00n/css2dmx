@@ -11,7 +11,7 @@
 }
 
 .transition {
-	transition: color 1s;
+	transition: color 1s ease-out;
 }
 
 @keyframes red2green {

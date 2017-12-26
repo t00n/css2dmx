@@ -34,7 +34,7 @@ def parse_transitions(style):
         if prop == "transition":
             # e.g. "transition: color 5s"
             # e.g. "transition: color 0.5s linear"
-            match = re.match(r'([\w-]*) (\d+(s|ms))( (.*))?', style[prop])
+            match = re.match(r'(\w+) (\d+(?:\.\d+)?m?s)(?: (.+))?', style[prop])
             groups = match.groups()
             if groups[0] is not None:
                 target_prop = groups[0]
@@ -43,12 +43,12 @@ def parse_transitions(style):
                 else:
                     duration = 0
                 params = []
-                if groups[4] is not None:
-                    if not groups[4].startswith('cubic-bezier'):
-                        function = groups[4]
+                if groups[2] is not None:
+                    if not groups[2].startswith('cubic-bezier'):
+                        function = groups[2]
                     else:
                         function = 'cubic-bezier'
-                        params = [float(x.strip()) for x in groups[4].split('(')[1].split(')')[0].split(',')]
+                        params = [float(x.strip()) for x in groups[2].split('(')[1].split(')')[0].split(',')]
                         params = [[params[0], params[1]], [params[2], params[3]]]
                 else:
                     function = 'ease'
