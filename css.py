@@ -98,7 +98,11 @@ def parse_animations(style):
                 delay = parse_time(groups[3]) if groups[3] is not None else 0
                 iteration = parse_iteration_count(groups[4]) if groups[4] is not None else 1
                 direction = parse_direction(groups[5]) if groups[5] is not None else 'normal'
-                animations[target_prop] = Animation(duration=duration, function=function, delay=delay, iteration=iteration, direction=direction)
+                animations[target_prop] = Animation(duration=duration,
+                                                    function=function,
+                                                    delay=delay,
+                                                    iteration=iteration,
+                                                    direction=direction)
     return animations
 
 

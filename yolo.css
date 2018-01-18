@@ -4,11 +4,11 @@
 
 #left {
 	color: rgb(255, 0, 0);
+	animation: red2green 5s ease 0s infinite alternate;
 }
 
 #right {
 	color: rgb(0, 255, 0);
-	animation: red2green 5s ease 0s infinite alternate;
 }
 
 .transition {

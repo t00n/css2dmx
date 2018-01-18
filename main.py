@@ -13,6 +13,10 @@ def apply_style(tree, css):
                 for prop in rule.properties:
                     node.add_style(prop.name, prop.value)
 
+    for node in tree.walk():
+        node.add_style('transitions', parse_transitions(node.style))
+        node.add_style('animations', parse_animations(node.style))
+
 
 def get_bezier_coefs(function):
     if function.name == 'ease':
@@ -44,15 +48,13 @@ def compute_prop_with_ratio(src, target, ratio):
 
 
 def compute_style(node, t):
-    transitions = parse_transitions(node.style)
-    animations = parse_animations(node.style)
     style = {}
     for prop in node.style:
         if prop == "color":
             src = [0, 0, 0]
             target = parse_rgb(node.style[prop])
-        if prop in transitions:
-            ratio = compute_transition_function_at(transitions[prop], t)
+        if prop in node.style['transitions']:
+            ratio = compute_transition_function_at(node.style['transitions'][prop], t)
         else:
             ratio = 1
         target = compute_prop_with_ratio(src, target, ratio)
