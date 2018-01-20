@@ -63,46 +63,42 @@ def parse_direction(direction):
 Transition = namedtuple('Transition', ['duration', 'function'])
 
 
-def parse_transitions(style):
+def parse_transition(transition):
     transitions = {}
-    for prop in style:
-        if prop == "transition":
-            # e.g. "transition: color 5s"
-            # e.g. "transition: color 0.5s linear"
-            match = re.match(r'(\w+) (\d+(?:\.\d+)?m?s)(?: (.+))?', style[prop])
-            groups = match.groups()
-            if groups[0] is not None:
-                target_prop = groups[0]
-                if groups[1] is not None:
-                    duration = parse_time(groups[1])
-                else:
-                    duration = 0
-                function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
-                transitions[target_prop] = Transition(duration=duration, function=function)
+    # e.g. "transition: color 5s"
+    # e.g. "transition: color 0.5s linear"
+    match = re.match(r'(\w+) (\d+(?:\.\d+)?m?s)(?: (.+))?', transition)
+    groups = match.groups()
+    if groups[0] is not None:
+        target_prop = groups[0]
+        if groups[1] is not None:
+            duration = parse_time(groups[1])
+        else:
+            duration = 0
+        function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
+        transitions[target_prop] = Transition(duration=duration, function=function)
     return transitions
 
 Animation = namedtuple('Animation', ['duration', 'function', 'delay', 'iteration', 'direction'])
 
 
-def parse_animations(style):
+def parse_animation(animation):
     animations = {}
-    for prop in style:
-        if prop == "animation":
-            # e.g. "red2green 5s ease 0s infinite alternate"
-            match = re.match(r'(\w+) (\d+m?s) (.+) (\d+m?s) (.+) (.+)', style[prop])
-            groups = match.groups()
-            if groups[0] is not None:
-                target_prop = groups[0]
-                duration = parse_time(groups[1]) if groups[1] is not None else 0
-                function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
-                delay = parse_time(groups[3]) if groups[3] is not None else 0
-                iteration = parse_iteration_count(groups[4]) if groups[4] is not None else 1
-                direction = parse_direction(groups[5]) if groups[5] is not None else 'normal'
-                animations[target_prop] = Animation(duration=duration,
-                                                    function=function,
-                                                    delay=delay,
-                                                    iteration=iteration,
-                                                    direction=direction)
+    # e.g. "red2green 5s ease 0s infinite alternate"
+    match = re.match(r'(\w+) (\d+m?s) (.+) (\d+m?s) (.+) (.+)', animation)
+    groups = match.groups()
+    if groups[0] is not None:
+        target_prop = groups[0]
+        duration = parse_time(groups[1]) if groups[1] is not None else 0
+        function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
+        delay = parse_time(groups[3]) if groups[3] is not None else 0
+        iteration = parse_iteration_count(groups[4]) if groups[4] is not None else 1
+        direction = parse_direction(groups[5]) if groups[5] is not None else 'normal'
+        animations[target_prop] = Animation(duration=duration,
+                                            function=function,
+                                            delay=delay,
+                                            iteration=iteration,
+                                            direction=direction)
     return animations
 
 

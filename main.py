@@ -2,7 +2,7 @@ from datetime import datetime
 
 from hardware import parse_hw_file
 from tree import parse_tree_file
-from css import parse_css_file, parse_rgb, parse_transitions, parse_animations
+from css import parse_css_file, parse_rgb, parse_transition, parse_animation
 from utils import trange, compute_cubic_bezier, de_casteljau
 
 
@@ -11,11 +11,24 @@ def apply_style(tree, css):
         for selector in rule.selectors:
             for node in tree.select(selector):
                 for prop in rule.properties:
-                    node.add_style(prop.name, prop.value)
+                    if prop.name == "color":
+                        val = parse_rgb(prop.value)
+                    elif prop.name == "transition":
+                        val = parse_transition(prop.value)
+                    elif prop.name == "animation":
+                        val = parse_animation(prop.value)
+                    else:
+                        val = prop.value
+                    node.add_style(prop.name, val)
 
-    for node in tree.walk():
-        node.add_style('transitions', parse_transitions(node.style))
-        node.add_style('animations', parse_animations(node.style))
+
+DEFAULT_STYLES = {
+    'color': [0, 0, 0]
+}
+
+
+def get_default_style(prop):
+    return DEFAULT_STYLES[prop]
 
 
 def get_bezier_coefs(function):
@@ -50,15 +63,14 @@ def compute_prop_with_ratio(src, target, ratio):
 def compute_style(node, t):
     style = {}
     for prop in node.style:
-        if prop == "color":
-            src = [0, 0, 0]
-            target = parse_rgb(node.style[prop])
-        if prop in node.style['transitions']:
-            ratio = compute_transition_function_at(node.style['transitions'][prop], t)
+        if 'transition' in node.style and prop in node.style['transition']:
+            src = get_default_style(prop)
+            target = node.style[prop]
+            ratio = compute_transition_function_at(node.style['transition'][prop], t)
+            value = compute_prop_with_ratio(src, target, ratio)
         else:
-            ratio = 1
-        target = compute_prop_with_ratio(src, target, ratio)
-        style[prop] = target
+            value = node.style[prop]
+        style[prop] = value
     return style
 
 
