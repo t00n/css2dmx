@@ -2,7 +2,7 @@ from datetime import datetime
 
 from hardware import parse_hw_file
 from tree import parse_tree_file
-from css import parse_css_file, parse_rgb, parse_transition, parse_animation
+from css import parse_css_file, get_default_style
 from utils import trange, compute_cubic_bezier, de_casteljau
 
 
@@ -12,15 +12,6 @@ def apply_style(tree, css):
             for node in tree.select(selector):
                 for prop in rule.properties:
                     node.add_style(prop.name, prop.value)
-
-
-DEFAULT_STYLES = {
-    'color': [0, 0, 0]
-}
-
-
-def get_default_style(prop):
-    return DEFAULT_STYLES[prop]
 
 
 def get_bezier_coefs(function):

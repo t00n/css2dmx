@@ -5,6 +5,15 @@ import cssutils
 import tinycss2
 
 
+DEFAULT_STYLES = {
+    'color': [0, 0, 0]
+}
+
+
+def get_default_style(prop):
+    return DEFAULT_STYLES[prop]
+
+
 def parse_rgb(rgb):
     return [int(x.strip()) for x in rgb.split("rgb(")[1].split(")")[0].split(",")]
 
