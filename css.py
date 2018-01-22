@@ -189,7 +189,7 @@ def parse_keyframe_frames(content):
                 is_percentage = True
             else:
                 raise Exception("Expected comma or curly-braces block, got'{}'".format(token))
-    return frames
+    return sorted(frames, key=lambda f: f.selector)
 
 
 def parse_keyframes(css):
