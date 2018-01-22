@@ -114,7 +114,13 @@ def parse_properties(style):
     properties = []
     for prop in IMPLEMENTED_PROPERTIES:
         if prop in style:
-            properties.append(Property(name=prop, value=style[prop]))
+            if prop == "color":
+                val = parse_rgb(style[prop])
+            elif prop == "transition":
+                val = parse_transition(style[prop])
+            elif prop == "animation":
+                val = parse_animation(style[prop])
+            properties.append(Property(name=prop, value=val))
     return properties
 
 

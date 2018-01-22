@@ -11,15 +11,7 @@ def apply_style(tree, css):
         for selector in rule.selectors:
             for node in tree.select(selector):
                 for prop in rule.properties:
-                    if prop.name == "color":
-                        val = parse_rgb(prop.value)
-                    elif prop.name == "transition":
-                        val = parse_transition(prop.value)
-                    elif prop.name == "animation":
-                        val = parse_animation(prop.value)
-                    else:
-                        val = prop.value
-                    node.add_style(prop.name, val)
+                    node.add_style(prop.name, prop.value)
 
 
 DEFAULT_STYLES = {
