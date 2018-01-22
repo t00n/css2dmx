@@ -193,12 +193,12 @@ def parse_keyframe_frames(content):
 
 
 def parse_keyframes(css):
-    keyframes = []
+    keyframes = {}
     for r in css:
         if r.type == 'at-rule' and r.at_keyword == 'keyframes':
             name = parse_keyframe_name(r.prelude)
             frames = parse_keyframe_frames(r.content)
-            keyframes.append(KeyframeRule(name=name, frames=frames))
+            keyframes[name] = KeyframeRule(name=name, frames=frames)
     return keyframes
 
 
