@@ -116,7 +116,7 @@ Rule = namedtuple('Rule', ['selectors', 'properties'])
 Selector = namedtuple('Selector', ['type', 'value'])
 Property = namedtuple('Property', ['name', 'value'])
 
-IMPLEMENTED_PROPERTIES = ['color', 'transition', 'animation']
+IMPLEMENTED_PROPERTIES = ['color', 'animation']
 
 
 def parse_properties(style):
@@ -125,8 +125,6 @@ def parse_properties(style):
         if prop in style:
             if prop == "color":
                 val = parse_rgb(style[prop])
-            elif prop == "transition":
-                val = parse_transition(style[prop])
             elif prop == "animation":
                 val = parse_animation(style[prop])
             properties.append(Property(name=prop, value=val))

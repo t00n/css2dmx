@@ -1,9 +1,8 @@
 from datetime import datetime
-import sys
 
 from hardware import parse_hw_file
 from tree import parse_tree_file
-from css import parse_css_file, get_default_style
+from css import parse_css_file
 from utils import trange, compute_cubic_bezier, de_casteljau
 
 
@@ -29,16 +28,6 @@ def get_bezier_coefs(function):
     elif function.name == 'cubic-bezier':
         p1, p2 = (function.params[0], function.params[1]), (function.params[2], function.params[3])
     return p1, p2
-
-
-def compute_transition_function_at(transition, t):
-    p1, p2 = get_bezier_coefs(transition.function)
-    coefs = (0, 0), p1, p2, (1, 1)
-    # stops transition after the duration is over
-    x0 = min(1, t / transition.duration)
-    x = compute_cubic_bezier(p1[0], p2[0], x0)[-1]
-    y = de_casteljau(x, coefs)[1]
-    return y
 
 
 def compute_prop_with_ratio(src, target, ratio):
@@ -81,11 +70,6 @@ def compute_style(node, keyframes, t):
             props_animation = compute_animations(node.style[prop], keyframes, t)
             for name, value in props_animation.items():
                 style[name] = value
-        if 'transition' in node.style and prop in node.style['transition']:
-            src = get_default_style(prop)
-            target = node.style[prop]
-            ratio = compute_transition_function_at(node.style['transition'][prop], t)
-            value = compute_prop_with_ratio(src, target, ratio)
         else:
             value = node.style[prop]
         style[prop] = value
