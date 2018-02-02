@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from hardware import parse_hw_file
-from tree import parse_tree_file
-from css import parse_css_file
-from utils import trange, compute_cubic_bezier, de_casteljau
+from lib.hardware import parse_hw_file
+from lib.tree import parse_tree_file
+from lib.css import parse_css_file
+from lib.utils import trange, compute_cubic_bezier, de_casteljau
 
 
 def apply_style(tree, css):
@@ -105,10 +105,12 @@ def run(hw, tree, css):
 
 if __name__ == '__main__':
     import sys
-    project = sys.argv[1]
-    hw_file = project + ".hw"
-    tree_file = project + ".tree"
-    css_file = project + ".css"
+    import os
+    dir_path = sys.argv[1]
+    dir_name = os.path.basename(dir_path)
+    hw_file = os.path.join(dir_path, dir_name + ".hw")
+    tree_file = os.path.join(dir_path, dir_name + ".tree")
+    css_file = os.path.join(dir_path, dir_name + ".css")
 
     hw = parse_hw_file(hw_file)
     tree = parse_tree_file(tree_file)

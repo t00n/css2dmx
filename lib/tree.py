@@ -52,8 +52,8 @@ def parse_tree(content):
     return parse_node("$root$", content)
 
 
-def parse_tree_file(fileid):
-    with open("yolo.tree") as f:
+def parse_tree_file(filename):
+    with open(filename) as f:
         content = json.load(f)
     return parse_tree(content)
 
