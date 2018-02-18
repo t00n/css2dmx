@@ -15,10 +15,10 @@ def parse_address(addr):
 
 # a color is a list of 3 addresses
 def parse_color(data):
-    if len(data) == 3:
+    if len(data) == 3 or len(data) == 4:
         return [parse_address(x) for x in data]
     else:
-        raise Exception("Expected (red, green, blue) for color, got {}".format(data))
+        raise Exception("Expected (red, green, blue) and optional alpha for color, got {}".format(data))
 
 
 # a rotation is a single address

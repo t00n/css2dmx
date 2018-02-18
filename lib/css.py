@@ -18,6 +18,20 @@ def parse_rgb(rgb):
     return [int(x.strip()) for x in rgb.split("rgb(")[1].split(")")[0].split(",")]
 
 
+def parse_rgba(rgba):
+    splitted = [x.strip() for x in rgba.split("rgba(")[1].split(")")[0].split(",")]
+    return [int(x) for x in splitted[:3]] + [float(splitted[3]) * 255]
+
+
+def parse_color(color):
+    if color[:4] == "rgba":
+        return parse_rgba(color)
+    elif color[:3] == "rgb":
+        return parse_rgb(color)
+    else:
+        raise Exception("Expected a color, got {}".format(color))
+
+
 def parse_time(duration):
     if duration[-2:] == 'ms':
         return float(duration[:-2]) / 1000
@@ -124,7 +138,7 @@ def parse_properties(style):
     for prop in IMPLEMENTED_PROPERTIES:
         if prop in style:
             if prop == "color":
-                val = parse_rgb(style[prop])
+                val = parse_color(style[prop])
             elif prop == "animation":
                 val = parse_animation(style[prop])
             properties.append(Property(name=prop, value=val))
