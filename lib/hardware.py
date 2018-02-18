@@ -6,11 +6,11 @@ import json
 def parse_address(addr):
     try:
         addr = int(addr)
-        if addr < 0 or addr > 255:
+        if addr < 1 or addr > 512:
             raise Exception()
         return addr
     except:
-        raise Exception("Expected an hexadecimal address between 0x00 and 0xff, got {}".format(addr))
+        raise Exception("Expected an hexadecimal address between 0x01 and 0xff, got {}".format(addr))
 
 
 # a color is a list of 3 addresses
