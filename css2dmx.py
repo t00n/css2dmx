@@ -1,9 +1,13 @@
 from datetime import datetime
+import socket
 
 from lib.hardware import parse_hw_file
 from lib.tree import parse_tree_file
 from lib.css import parse_css_file
 from lib.utils import trange, compute_cubic_bezier, de_casteljau
+
+
+sock = socket.create_connection(("127.0.0.1", 9010))
 
 
 def apply_style(tree, css):
@@ -88,7 +92,15 @@ def compute_dmx(tree, hw, keyframes, t):
 
 
 def send_dmx(state):
-    print(state)
+    state = dict(state)
+    bs = []
+    for i in range(1, 512):
+        bs.append(state.get(i, 0))
+    bs = bytes(bs)
+    sock.send(b"\35\2\0\20")
+    sock.send(b"\10\n\20\0\32\rStreamDmxData\"\207\4\10\1\22\200\4" +
+              bs +
+              b"\0\30d")
 
 
 def run(hw, tree, css):

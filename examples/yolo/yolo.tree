@@ -1,8 +1,12 @@
 {
 	"children": {
-		"left": {},
-		"right": {
-			"class": "transition"
+		"mygroup": {
+			"children": {		
+				"left": {},
+				"right": {
+					"class": "off"
+				}
+			}
 		}
 	}
 }
