@@ -8,7 +8,7 @@ from lib.css import parse_css_file
 from lib.utils import trange, compute_cubic_bezier, de_casteljau
 
 
-@lru_cache(size=1)
+@lru_cache(maxsize=1)
 def get_socket():
     sock = socket.create_connection(("127.0.0.1", 9010))
     return sock
