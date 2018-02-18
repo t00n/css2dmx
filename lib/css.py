@@ -20,7 +20,7 @@ def parse_rgb(rgb):
 
 def parse_rgba(rgba):
     splitted = [x.strip() for x in rgba.split("rgba(")[1].split(")")[0].split(",")]
-    return [int(x) for x in splitted[:3]] + [float(splitted[3]) * 255]
+    return [int(x) for x in splitted[:3]] + [int(float(splitted[3]) * 255)]
 
 
 def parse_color(color):
