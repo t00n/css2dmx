@@ -1,6 +1,8 @@
 from datetime import datetime
 import socket
 from functools import lru_cache
+import serial
+from time import sleep
 
 from lib.hardware import parse_hw_file
 from lib.tree import parse_tree_file
@@ -12,6 +14,14 @@ from lib.utils import trange, compute_cubic_bezier, de_casteljau
 def get_socket():
     sock = socket.create_connection(("127.0.0.1", 9010))
     return sock
+
+
+@lru_cache(maxsize=1)
+def get_serial():
+    try:
+        return serial.Serial("/dev/ttyACM0", 115200, timeout=.1)
+    except serial.serialutil.SerialException:
+        return None
 
 
 def apply_style(tree, css):
@@ -95,17 +105,44 @@ def compute_dmx(tree, hw, keyframes, t):
     return sorted(dmx, key=lambda x: x[0])
 
 
-def send_dmx(state):
-    sock = get_socket()
+@lru_cache()
+def create_bytes(state):
     state = dict(state)
     bs = []
     for i in range(1, 512):
         bs.append(state.get(i, 0))
     bs = bytes(bs)
+    return bs
+
+
+def send_ola(state):
+    sock = get_socket()
+    bs = create_bytes(state)
     sock.send(b"\35\2\0\20")
     sock.send(b"\10\n\20\0\32\rStreamDmxData\"\207\4\10\1\22\200\4" +
               bs +
               b"\0\30d")
+
+
+def send_serial(state):
+    ser = get_serial()
+    if ser:
+        bs = b"\x00" + create_bytes(state)
+        for i in range(32):
+            chunk = bs[i * 16:(i + 1) * 16]
+            ser.write(chunk)
+            sleep(1e-4)
+
+serial_limit_counter = 0
+
+
+def send_dmx(state):
+    state = tuple(state)
+    global serial_limit_counter
+    send_ola(state)
+    if serial_limit_counter % 5 == 0:
+        send_serial(state)
+    serial_limit_counter += 1
 
 
 def run(hw, tree, css):
