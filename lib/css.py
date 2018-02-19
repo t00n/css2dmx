@@ -14,20 +14,21 @@ def get_default_style(prop):
     return DEFAULT_STYLES[prop]
 
 
-def parse_rgb(rgb):
-    return [int(x.strip()) for x in rgb.split("rgb(")[1].split(")")[0].split(",")]
-
-
-def parse_rgba(rgba):
-    splitted = [x.strip() for x in rgba.split("rgba(")[1].split(")")[0].split(",")]
-    return [int(x) for x in splitted[:3]] + [int(float(splitted[3]) * 255)]
-
-
 def parse_color(color):
     if color[:4] == "rgba":
-        return parse_rgba(color)
+        return [
+            int(x.strip()) if i < 3 else int(255*float(x))
+            for i, x in enumerate(color[5:-1].split(','))
+        ]
     elif color[:3] == "rgb":
-        return parse_rgb(color)
+        return [int(x.strip()) for x in color[4:-1].split(',')]
+    elif color[0] == '#':
+        if len(color) == 4:
+            return [int(c, 16) << 4 for c in color[1:]]
+        elif len(color) == 7:
+            return [int(color[1+2*i:3+2*i], 16) for i in range(3)]
+        else:
+            raise Exception("Expecting #xxx or #xxxxxx, got {}".format(color))
     else:
         raise Exception("Expected a color, got {}".format(color))
 
