@@ -1,12 +1,8 @@
-{
-	"children": {
-		"mygroup": {
-			"children": {		
-				"left": {},
-				"right": {
-					"class": "off"
-				}
-			}
-		}
-	}
-}
+<root>
+	<mygroup>
+		<left>
+		</left>
+		<right class="off">
+		</right>
+	</mygroup>
+</root>
