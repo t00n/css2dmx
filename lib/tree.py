@@ -10,6 +10,8 @@ class Node:
 
     def add_style(self, name, value):
         self.style[name] = value
+        for c in self.children:
+            c.add_style(name, value)
 
     def walk(self):
         yield self
