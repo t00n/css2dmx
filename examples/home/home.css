@@ -5,7 +5,16 @@
 
 #imac {
 	color: rgb(255, 0, 0);
-	animation: red2green 5s ease 0s infinite alternate;
+	animation: breathe 5s ease 0s infinite alternate;
+}
+
+@keyframes breathe {
+	0%, 100% {
+		color: #000;
+	}
+	50% {
+		color: #fff;
+	}
 }
 
 @keyframes redintensity {
@@ -14,14 +23,5 @@
 	}
 	50% {
 		color: rgba(255, 0, 0, 0);
-	}
-}
-
-@keyframes red2green {
-	0% {
-		color: rgb(255, 0, 0);
-	}
-	100% {
-		color: rgb(0, 255, 0);
 	}
 }
