@@ -1,0 +1,27 @@
+#chronosIII {
+	color: rgba(255, 0, 0, 1);
+	animation: redintensity 5s ease 0s infinite alternate;
+}
+
+#imac {
+	color: rgb(255, 0, 0);
+	animation: red2green 5s ease 0s infinite alternate;
+}
+
+@keyframes redintensity {
+	0%, 100% {
+		color: rgba(255, 0, 0, 1);
+	}
+	50% {
+		color: rgba(255, 0, 0, 0);
+	}
+}
+
+@keyframes red2green {
+	0% {
+		color: rgb(255, 0, 0);
+	}
+	100% {
+		color: rgb(0, 255, 0);
+	}
+}

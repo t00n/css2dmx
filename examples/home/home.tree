@@ -1,0 +1,11 @@
+{
+	"children": {
+		"chronosIII": {},
+		"imac": {
+			"children": {
+				"led0": {},
+				"led1": {}
+			}
+		}
+	}
+}
