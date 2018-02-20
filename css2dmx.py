@@ -129,21 +129,16 @@ def send_serial(state):
     ser = get_serial()
     if ser:
         bs = b"\x00" + create_bytes(state)
-        for i in range(32):
+        for i in range(8):
             chunk = bs[i * 16:(i + 1) * 16]
             ser.write(chunk)
             sleep(1e-4)
 
-serial_limit_counter = 0
-
 
 def send_dmx(state):
     state = tuple(state)
-    global serial_limit_counter
     send_ola(state)
-    if serial_limit_counter % 5 == 0:
-        send_serial(state)
-    serial_limit_counter += 1
+    send_serial(state)
 
 
 def run(hw, tree, css):
@@ -152,7 +147,7 @@ def run(hw, tree, css):
     keyframes = css.keyframes
     old_state = None
     now = datetime.now()
-    for t in trange(interval=0.01):
+    for t in trange(interval=0.02):
         state = compute_dmx(tree, hw, keyframes, t.timestamp() - now.timestamp())
         if state != old_state:
             old_state = state
