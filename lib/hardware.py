@@ -60,8 +60,3 @@ def parse_hw_file(filename):
     with open(filename) as f:
         obj = json.load(f)
     return parse_hw(obj)
-
-
-if __name__ == '__main__':
-    res = parse_hw_file("yolo.hw")
-    print(res)

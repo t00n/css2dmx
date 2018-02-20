@@ -17,7 +17,7 @@ def get_default_style(prop):
 def parse_color(color):
     if color[:4] == "rgba":
         return [
-            int(x.strip()) if i < 3 else int(255*float(x))
+            int(x.strip()) if i < 3 else int(255 * float(x))
             for i, x in enumerate(color[5:-1].split(','))
         ]
     elif color[:3] == "rgb":
@@ -26,7 +26,7 @@ def parse_color(color):
         if len(color) == 4:
             return [int(c, 16) << 4 for c in color[1:]]
         elif len(color) == 7:
-            return [int(color[1+2*i:3+2*i], 16) for i in range(3)]
+            return [int(color[1 + 2 * i:3 + 2 * i], 16) for i in range(3)]
         else:
             raise Exception("Expecting #xxx or #xxxxxx, got {}".format(color))
     else:
@@ -231,7 +231,3 @@ def parse_css_file(filename):
         css = tinycss2.parse_stylesheet(f.read())
     keyframes = parse_keyframes(css)
     return CSS(rules=rules, keyframes=keyframes)
-
-if __name__ == '__main__':
-    res = parse_css_file("yolo.css")
-    print(res)

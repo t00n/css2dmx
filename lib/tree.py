@@ -48,9 +48,3 @@ def parse_tree_file(filename):
     tree = ET.parse(filename)
     root = tree.getroot()
     return parse_node(root)
-
-
-if __name__ == '__main__':
-    res = parse_tree_file("yolo.tree")
-    for node in res.walk():
-        print(node)
