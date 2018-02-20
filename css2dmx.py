@@ -20,7 +20,8 @@ def get_socket():
 def get_serial():
     try:
         return serial.Serial("/dev/ttyACM0", 115200, timeout=.1)
-    except serial.serialutil.SerialException:
+    except serial.serialutil.SerialException as e:
+        print(e)
         return None
 
 
