@@ -5,7 +5,7 @@
 
 #imac {
 	color: rgb(255, 0, 0);
-	animation: breathe 5s ease 0s infinite alternate;
+	animation: breathe 5s ease-in-out 0s infinite alternate;
 }
 
 @keyframes breathe {
