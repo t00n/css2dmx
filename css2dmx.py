@@ -146,7 +146,7 @@ def send_dmx(state):
     send_serial(state)
 
 
-def run(hw, tree, css):
+def run(hw, tree, css, verbose=False):
     apply_style(tree, css)
     tree.print()
     keyframes = css.keyframes
@@ -157,6 +157,8 @@ def run(hw, tree, css):
         if state != old_state:
             old_state = state
             send_dmx(state)
+            if verbose:
+                print(state)
 
 if __name__ == '__main__':
     import sys
@@ -167,8 +169,10 @@ if __name__ == '__main__':
     tree_file = os.path.join(dir_path, dir_name + ".tree")
     css_file = os.path.join(dir_path, dir_name + ".css")
 
+    verbose = len(sys.argv) == 3 and sys.argv[2] == "-v"
+
     hw = parse_hw_file(hw_file)
     tree = parse_tree_file(tree_file)
     css = parse_css_file(css_file)
 
-    run(hw, tree, css)
+    run(hw, tree, css, verbose)
