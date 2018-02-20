@@ -12,8 +12,12 @@ from lib.utils import trange, compute_cubic_bezier, de_casteljau
 
 @lru_cache(maxsize=1)
 def get_socket():
-    sock = socket.create_connection(("127.0.0.1", 9010))
-    return sock
+    try:
+        sock = socket.create_connection(("127.0.0.1", 9010))
+        return sock
+    except Exception as e:
+        print(e)
+        return None
 
 
 @lru_cache(maxsize=1)
@@ -118,11 +122,12 @@ def create_bytes(state):
 
 def send_ola(state):
     sock = get_socket()
-    bs = create_bytes(state)
-    sock.send(b"\35\2\0\20")
-    sock.send(b"\10\n\20\0\32\rStreamDmxData\"\207\4\10\1\22\200\4" +
-              bs +
-              b"\0\30d")
+    if sock:
+        bs = create_bytes(state)
+        sock.send(b"\35\2\0\20")
+        sock.send(b"\10\n\20\0\32\rStreamDmxData\"\207\4\10\1\22\200\4" +
+                  bs +
+                  b"\0\30d")
 
 
 def send_serial(state):
