@@ -187,6 +187,15 @@ def parse_keyframe_frames(content):
             if token.type == 'percentage':
                 percentages.append(token.int_value)
                 is_percentage = False
+            elif token.type == 'ident':
+                if token.value == 'from':
+                    percentages.append(0)
+                    is_percentage = False
+                elif token.value == 'to':
+                    percentages.append(100)
+                    is_percentage = False
+                else:
+                    raise Exception("Exception from/to in keyframe, got {}".format(token))
             else:
                 raise Exception("Expected percentage in keyframe, got '{}'".format(token))
         else:
