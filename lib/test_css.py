@@ -1,7 +1,7 @@
-import tinycss2
-import pytest
+from css import parse_color, \
+    parse_keyframe_frames
 
-from css import parse_color, parse_keyframe_frames
+from fixtures import *  # NOQA
 
 
 def test_parse_color():
@@ -13,34 +13,6 @@ def test_parse_color():
     assert parse_color('rgb(10, 20,30)') == [10, 20, 30]
     assert parse_color('rgba(0, 0, 0, 1)') == [0, 0, 0, 255]
     assert parse_color('rgba(10, 20,30, 0.2)') == [10, 20, 30, 51]
-
-
-@pytest.fixture
-def keyframe_percentage():
-    return tinycss2.parse_stylesheet("""
-        @keyframes redintensity {
-            0%, 100% {
-                color: rgba(255, 0, 0, 1);
-            }
-            50% {
-                color: rgba(255, 0, 0, 0);
-            }
-        }
-    """)[1]
-
-
-@pytest.fixture
-def keyframe_fromto():
-    return tinycss2.parse_stylesheet("""
-        @keyframes redintensity {
-            from, to {
-                color: rgba(255, 0, 0, 1);
-            }
-            50% {
-                color: rgba(255, 0, 0, 0);
-            }
-        }
-    """)[1]
 
 
 def test_parse_keyframe_frames(keyframe_percentage, keyframe_fromto):
@@ -64,3 +36,15 @@ def test_parse_keyframe_frames(keyframe_percentage, keyframe_fromto):
     assert(parsed[2].selector == 100)
     assert(parsed[2].properties[0].name == "color")
     assert(parsed[2].properties[0].value == [255, 0, 0, 255])
+
+
+def test_parse_animation(animation_delay):
+    anim = animation_delay
+    assert(list(anim.keys()) == ['redintensity'])
+    anim = anim['redintensity']
+    assert(anim.duration == 5)
+    assert(anim.function.name == "ease")
+    assert(len(anim.function.params) == 0)
+    assert(anim.delay == 2)
+    assert(anim.iteration == "infinite")
+    assert(anim.direction == "alternate")
