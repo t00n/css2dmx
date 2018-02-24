@@ -108,28 +108,30 @@ def parse_transition(transition):
 Animation = namedtuple('Animation', ['duration', 'function', 'delay', 'iteration', 'direction'])
 
 
-def parse_animation(animation):
+def parse_animation(value):
     animations = {}
+    for anim in value.split(','):
+        anim = anim.strip()
     # e.g. "red2green 5s ease 0s infinite alternate"
-    match = re.match(r'(\w+)'
-                     r'(?: (\d+m?s))?'
-                     r'(?: (\w+(?:\(.*\))?))?'
-                     r'(?: (\d+m?s))?'
-                     r'(?: (infinite|\d+))?'
-                     r'(?: (\w+))?', animation)
-    groups = match.groups()
-    if groups[0] is not None:
-        target_prop = groups[0]
-        duration = parse_time(groups[1]) if groups[1] is not None else 0
-        function = parse_timing_function(groups[2])
-        delay = parse_time(groups[3]) if groups[3] is not None else 0
-        iteration = parse_iteration_count(groups[4]) if groups[4] is not None else 1
-        direction = parse_direction(groups[5]) if groups[5] is not None else 'normal'
-        animations[target_prop] = Animation(duration=duration,
-                                            function=function,
-                                            delay=delay,
-                                            iteration=iteration,
-                                            direction=direction)
+        match = re.match(r'(\w+)'
+                         r'(?: (\d+m?s))?'
+                         r'(?: (\w+(?:\(.*\))?))?'
+                         r'(?: (\d+m?s))?'
+                         r'(?: (infinite|\d+))?'
+                         r'(?: (\w+))?', anim)
+        groups = match.groups()
+        if groups[0] is not None:
+            target_prop = groups[0]
+            duration = parse_time(groups[1]) if groups[1] is not None else 0
+            function = parse_timing_function(groups[2])
+            delay = parse_time(groups[3]) if groups[3] is not None else 0
+            iteration = parse_iteration_count(groups[4]) if groups[4] is not None else 1
+            direction = parse_direction(groups[5]) if groups[5] is not None else 'normal'
+            animations[target_prop] = Animation(duration=duration,
+                                                function=function,
+                                                delay=delay,
+                                                iteration=iteration,
+                                                direction=direction)
     return animations
 
 
