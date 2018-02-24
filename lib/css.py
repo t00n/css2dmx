@@ -55,6 +55,8 @@ TIMING_FUNCTIONS = ["ease", "linear", "ease-in", "ease-out", "ease-in-out", "cub
 
 
 def parse_timing_function(function):
+    if function is None:
+        return Function(name='ease', params=[])
     match = re.match(r'\A([a-zA-Z-]+)(\(\w+(?:, \w+)*\))?\Z', function)
     groups = match.groups()
     if groups[0] is not None and groups[0] in TIMING_FUNCTIONS:
@@ -99,7 +101,7 @@ def parse_transition(transition):
             duration = parse_time(groups[1])
         else:
             duration = 0
-        function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
+        function = parse_timing_function(groups[2])
         transitions[target_prop] = Transition(duration=duration, function=function)
     return transitions
 
@@ -109,12 +111,17 @@ Animation = namedtuple('Animation', ['duration', 'function', 'delay', 'iteration
 def parse_animation(animation):
     animations = {}
     # e.g. "red2green 5s ease 0s infinite alternate"
-    match = re.match(r'(\w+) (\d+m?s) (.+) (\d+m?s) (.+) (.+)', animation)
+    match = re.match(r'(\w+)'
+                     r'(?: (\d+m?s))?'
+                     r'(?: (\w+(?:\(.*\))?))?'
+                     r'(?: (\d+m?s))?'
+                     r'(?: (infinite|\d+))?'
+                     r'(?: (\w+))?', animation)
     groups = match.groups()
     if groups[0] is not None:
         target_prop = groups[0]
         duration = parse_time(groups[1]) if groups[1] is not None else 0
-        function = parse_timing_function(groups[2]) if groups[2] is not None else 'ease'
+        function = parse_timing_function(groups[2])
         delay = parse_time(groups[3]) if groups[3] is not None else 0
         iteration = parse_iteration_count(groups[4]) if groups[4] is not None else 1
         direction = parse_direction(groups[5]) if groups[5] is not None else 'normal'
