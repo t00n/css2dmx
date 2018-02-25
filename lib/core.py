@@ -40,6 +40,10 @@ def compute_animations(animations, keyframes, t):
         real_t = t - anim.delay
         if anim.direction == 'reverse':
             real_t = anim.duration - (real_t % anim.duration)
+        elif anim.direction == 'alternate':
+            position = (real_t % (anim.duration * 2)) / anim.duration
+            if position > 1:
+                real_t = anim.duration - (real_t % anim.duration)
         if anim.iteration == 'infinite' or real_t <= anim.duration * anim.iteration:
             # compute where we are in the animation
             percent_t = (real_t % anim.duration) / anim.duration

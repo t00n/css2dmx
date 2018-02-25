@@ -69,3 +69,8 @@ def animation_delay():
 @pytest.fixture
 def animation_reverse():
     return parse_animation("redintensity 5s ease 0s infinite reverse")
+
+
+@pytest.fixture
+def animation_alternate():
+    return parse_animation("redintensity 5s ease 0s infinite alternate")
