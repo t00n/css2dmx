@@ -47,4 +47,4 @@ def test_parse_animation(animation_delay):
     assert(len(anim.function.params) == 0)
     assert(anim.delay == 2)
     assert(anim.iteration == "infinite")
-    assert(anim.direction == "alternate")
+    assert(anim.direction == "normal")
