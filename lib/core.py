@@ -1,7 +1,8 @@
 from .utils import compute_cubic_bezier, de_casteljau
+from .css import get_timing_function_coefs
 
 
-def apply_style(tree, css):
+def apply_style_on_dom(tree, css):
     for rule in css.rules:
         for selector in rule.selectors:
             for node in tree.select(selector):
@@ -9,20 +10,15 @@ def apply_style(tree, css):
                     node.add_style(prop.name, prop.value)
 
 
-def get_bezier_coefs(function):
-    if function.name == 'ease':
-        p1, p2 = (0.25, 0.1), (0.25, 1)
-    elif function.name == 'ease-in':
-        p1, p2 = (0.42, 0), (1, 1)
-    elif function.name == 'ease-out':
-        p1, p2 = (0, 0), (0.58, 1)
-    elif function.name == 'ease-in-out':
-        p1, p2 = (0.42, 0), (0.58, 1)
-    elif function.name == 'linear':
-        p1, p2 = (0, 0), (1, 1)
-    elif function.name == 'cubic-bezier':
-        p1, p2 = (function.params[0], function.params[1]), (function.params[2], function.params[3])
-    return p1, p2
+def compute_dmx(tree, hw, keyframes, t):
+    dmx = []
+    for node in tree.walk():
+        if node.id in hw:
+            style = compute_style(node, keyframes, t)
+            for prop, val in style.items():
+                if prop in hw[node.id]:
+                    dmx.extend(list(zip(hw[node.id][prop], val)))
+    return sorted(dmx, key=lambda x: x[0])
 
 
 def compute_prop_with_ratio(src, target, ratio):
@@ -65,7 +61,7 @@ def compute_animations(animations, keyframes, t):
                 lower_selector = selector
                 lower_properties = f.properties
             x0 = (percent_t - lower_selector) / (higher_selector - lower_selector)
-            p1, p2 = get_bezier_coefs(anim.function)
+            p1, p2 = get_timing_function_coefs(anim.function)
             coefs = (0, 0), p1, p2, (1, 1)
             x = compute_cubic_bezier(p1[0], p2[0], x0)[-1]
             y = de_casteljau(x, coefs)[1]
@@ -88,14 +84,3 @@ def compute_style(node, keyframes, t):
             value = node.style[prop]
         style[prop] = value
     return style
-
-
-def compute_dmx(tree, hw, keyframes, t):
-    dmx = []
-    for node in tree.walk():
-        if node.id in hw:
-            style = compute_style(node, keyframes, t)
-            for prop, val in style.items():
-                if prop in hw[node.id]:
-                    dmx.extend(list(zip(hw[node.id][prop], val)))
-    return sorted(dmx, key=lambda x: x[0])

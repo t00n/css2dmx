@@ -5,13 +5,20 @@ import cssutils
 import tinycss2
 
 
-DEFAULT_STYLES = {
-    'color': [0, 0, 0]
-}
-
-
-def get_default_style(prop):
-    return DEFAULT_STYLES[prop]
+def get_timing_function_coefs(function):
+    if function.name == 'ease':
+        p1, p2 = (0.25, 0.1), (0.25, 1)
+    elif function.name == 'ease-in':
+        p1, p2 = (0.42, 0), (1, 1)
+    elif function.name == 'ease-out':
+        p1, p2 = (0, 0), (0.58, 1)
+    elif function.name == 'ease-in-out':
+        p1, p2 = (0.42, 0), (0.58, 1)
+    elif function.name == 'linear':
+        p1, p2 = (0, 0), (1, 1)
+    elif function.name == 'cubic-bezier':
+        p1, p2 = (function.params[0], function.params[1]), (function.params[2], function.params[3])
+    return p1, p2
 
 
 def parse_color(color):
@@ -28,7 +35,7 @@ def parse_color(color):
         elif len(color) == 7:
             return [int(color[1 + 2 * i:3 + 2 * i], 16) for i in range(3)]
         else:
-            raise Exception("Expecting #xxx or #xxxxxx, got {}".format(color))
+            raise Exception("Expected #xxx or #xxxxxx, got {}".format(color))
     else:
         raise Exception("Expected a color, got {}".format(color))
 

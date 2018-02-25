@@ -4,7 +4,7 @@ from functools import lru_cache
 import serial
 from time import sleep
 
-from lib.core import apply_style, compute_dmx
+from lib.core import apply_style_on_dom, compute_dmx
 from lib.hardware import parse_hw_file
 from lib.tree import parse_tree_file
 from lib.css import parse_css_file
@@ -67,7 +67,7 @@ def send_dmx(state):
 
 
 def run(hw, tree, css, verbose=False):
-    apply_style(tree, css)
+    apply_style_on_dom(tree, css)
     tree.print()
     keyframes = css.keyframes
     old_state = None
