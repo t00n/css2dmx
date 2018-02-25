@@ -118,7 +118,7 @@ def parse_animation(value):
                          r'(?: (\w+(?:\(.*\))?))?'
                          r'(?: (\d+m?s))?'
                          r'(?: (infinite|\d+))?'
-                         r'(?: (\w+))?', anim)
+                         r'(?: ([\w-]+))?', anim)
         groups = match.groups()
         if groups[0] is not None:
             target_prop = groups[0]

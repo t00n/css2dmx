@@ -38,12 +38,19 @@ def compute_animations(animations, keyframes, t):
         # when delay is positive, we want to play the animation as if we are in the past
         # when delay is negative, we want to play the animation as if it had already begun
         real_t = t - anim.delay
+        anim_reversed = False
         if anim.direction == 'reverse':
-            real_t = anim.duration - (real_t % anim.duration)
+            anim_reversed = True
         elif anim.direction == 'alternate':
             position = (real_t % (anim.duration * 2)) / anim.duration
             if position > 1:
-                real_t = anim.duration - (real_t % anim.duration)
+                anim_reversed = True
+        elif anim.direction == 'alternate-reverse':
+            position = (real_t % (anim.duration * 2)) / anim.duration
+            if position <= 1:
+                anim_reversed = True
+        if anim_reversed:
+            real_t = anim.duration - (real_t % anim.duration)
         if anim.iteration == 'infinite' or real_t <= anim.duration * anim.iteration:
             # compute where we are in the animation
             percent_t = (real_t % anim.duration) / anim.duration

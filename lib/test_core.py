@@ -30,3 +30,13 @@ def test_compute_animations_alternate(keyframe_simple_parsed, animation_alternat
     assert(compute_animations(animation_alternate, keyframe_simple_parsed, 9.99) == {'color': [255, 0, 0, 254]})
     assert(compute_animations(animation_alternate, keyframe_simple_parsed, 10.01) == {'color': [255, 0, 0, 254]})
     assert(compute_animations(animation_alternate, keyframe_simple_parsed, 14.99) == {'color': [255, 0, 0, 0]})
+
+
+def test_compute_animations_alternate_reverse(keyframe_simple_parsed, animation_alternate_reverse):
+    assert(compute_animations(animation_alternate_reverse, keyframe_simple_parsed, 0.01) == {'color': [255, 0, 0, 0]})
+    assert(compute_animations(animation_alternate_reverse, keyframe_simple_parsed, 2.51) == {'color': [255, 0, 0, 50]})
+    assert(compute_animations(animation_alternate_reverse, keyframe_simple_parsed, 4.99) == {'color': [255, 0, 0, 254]})
+    assert(compute_animations(animation_alternate_reverse, keyframe_simple_parsed, 7.51) == {'color': [255, 0, 0, 49]})
+    assert(compute_animations(animation_alternate_reverse, keyframe_simple_parsed, 9.99) == {'color': [255, 0, 0, 0]})
+    assert(compute_animations(animation_alternate_reverse, keyframe_simple_parsed, 10.01) == {'color': [255, 0, 0, 0]})
+    assert(compute_animations(animation_alternate_reverse, keyframe_simple_parsed, 14.99) == {'color': [255, 0, 0, 254]})

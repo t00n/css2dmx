@@ -74,3 +74,8 @@ def animation_reverse():
 @pytest.fixture
 def animation_alternate():
     return parse_animation("redintensity 5s ease 0s infinite alternate")
+
+
+@pytest.fixture
+def animation_alternate_reverse():
+    return parse_animation("redintensity 5s ease 0s infinite alternate-reverse")
