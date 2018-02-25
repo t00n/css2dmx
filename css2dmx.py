@@ -1,8 +1,10 @@
 from datetime import datetime
-import socket
 from functools import lru_cache
 import serial
 from time import sleep
+import array
+
+import ola.ClientWrapper
 
 from lib.core import apply_style_on_dom, compute_dmx
 from lib.hardware import parse_hw_file
@@ -12,10 +14,9 @@ from lib.utils import trange
 
 
 @lru_cache(maxsize=1)
-def get_socket():
+def get_ola_client():
     try:
-        sock = socket.create_connection(("127.0.0.1", 9010))
-        return sock
+        return ola.ClientWrapper.OlaClient()
     except Exception as e:
         print(e)
         return None
@@ -41,13 +42,10 @@ def create_bytes(state):
 
 
 def send_ola(state):
-    sock = get_socket()
-    if sock:
+    client = get_ola_client()
+    if client:
         bs = create_bytes(state)
-        sock.send(b"\35\2\0\20")
-        sock.send(b"\10\n\20\0\32\rStreamDmxData\"\207\4\10\1\22\200\4" +
-                  bs +
-                  b"\0\30d")
+        client.SendDmx(universe=1, data=array.array('B', bs))
 
 
 def send_serial(state):
