@@ -1,7 +1,7 @@
-from css import parse_color, \
+from .css import parse_color, \
     parse_keyframe_frames
 
-from fixtures import *  # NOQA
+from .fixtures import *  # NOQA
 
 
 def test_parse_color():
