@@ -21,16 +21,9 @@ def parse_color(data):
         raise Exception("Expected (red, green, blue) and optional alpha for color, got {}".format(data))
 
 
-# a rotation is a single address
-def parse_rotation(data):
-    return [parse_address(data)]
-
-
 def parse_property(name, data):
     if name == "color":
         return parse_color(data)
-    elif name == "rotation":
-        return parse_rotation(data)
     else:
         raise Exception("Undefined property: {}".format(name))
 
