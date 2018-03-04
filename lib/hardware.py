@@ -93,7 +93,7 @@ pulse_direction_schema = {
     "type": "object",
     "properties": {
         "chan": address_schema,
-        "enum": enum_schema(["none", "normal", "reverse", "alternate"], required=True)
+        "enum": enum_schema(["normal", "reverse", "alternate"], required=True)
     },
     "required": [
         "chan",

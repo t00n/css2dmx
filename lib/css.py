@@ -40,14 +40,32 @@ def parse_color(color):
         raise Exception("Expected a color, got {}".format(color))
 
 
-def parse_strobe(strobe):
+def parse_ratio(ratio):
     try:
-        speed = float(strobe)
-        if speed < 0 or speed > 1:
-            raise Exception("Expected strobe speed between 0 and 1, got {}".format(strobe))
+        res = float(ratio)
+        if res < 0 or res > 1:
+            raise Exception("Expected ratio between 0 and 1, got {}".format(ratio))
     except ValueError:
-        raise Exception("Expected strobe speed as float, got {}".format(strobe))
-    return int(speed * 255)
+        raise Exception("Expected ratio as float, got {}".format(ratio))
+    return int(res * 255)
+
+
+def parse_strobe(strobe):
+    return parse_ratio(strobe)
+
+
+# PULSE
+Pulse = namedtuple('Pulse', ['direction', 'speed'])
+
+
+def parse_pulse(pulse):
+    try:
+        direction, speed = [x.strip() for x in pulse.split(" ")]
+        direction = parse_direction(direction)
+        speed = parse_ratio(speed)
+    except ValueError:
+        raise Exception("Expected pulse as `direction speed`, got {}".format(pulse))
+    return Pulse(direction=direction, speed=speed)
 
 
 def parse_time(duration):
@@ -138,7 +156,7 @@ Rule = namedtuple('Rule', ['selectors', 'properties'])
 Selector = namedtuple('Selector', ['type', 'value'])
 Property = namedtuple('Property', ['name', 'value'])
 
-IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'animation']
+IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'animation']
 
 
 def parse_properties(style):
@@ -149,6 +167,8 @@ def parse_properties(style):
                 val = parse_color(style[prop])
             elif prop == "strobe":
                 val = parse_strobe(style[prop])
+            elif prop == "pulse":
+                val = parse_pulse(style[prop])
             elif prop == "animation":
                 val = parse_animation(style[prop])
             properties.append(Property(name=prop, value=val))
