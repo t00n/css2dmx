@@ -21,23 +21,35 @@ def get_timing_function_coefs(function):
     return p1, p2
 
 
+Color = namedtuple('Color', ['red', 'green', 'blue', 'white', 'alpha'])
+
+
 def parse_color(color):
-    if color[:4] == "rgba":
-        return [
-            int(x.strip()) if i < 3 else int(255 * float(x))
-            for i, x in enumerate(color[5:-1].split(','))
-        ]
+    white = 0
+    alpha = 255
+    if color[:5] == "rgbwa":
+        splitted = color[6:-1].split(',')
+        red, green, blue, white = [int(x.strip()) for x in splitted[:4]]
+        alpha = parse_ratio(splitted[4])
+    elif color[:4] == "rgbw":
+        splitted = color[5:-1].split(',')
+        red, green, blue, white = [int(x.strip()) for x in splitted[:4]]
+    elif color[:4] == "rgba":
+        splitted = color[5:-1].split(',')
+        red, green, blue = [int(x.strip()) for x in splitted[:3]]
+        alpha = parse_ratio(splitted[3])
     elif color[:3] == "rgb":
-        return [int(x.strip()) for x in color[4:-1].split(',')]
+        red, green, blue = [int(x.strip()) for x in color[4:-1].split(',')]
     elif color[0] == '#':
         if len(color) == 4:
-            return [int(c, 16) << 4 for c in color[1:]]
+            red, green, blue = [int(c, 16) << 4 for c in color[1:]]
         elif len(color) == 7:
-            return [int(color[1 + 2 * i:3 + 2 * i], 16) for i in range(3)]
+            red, green, blue = [int(color[1 + 2 * i:3 + 2 * i], 16) for i in range(3)]
         else:
             raise Exception("Expected #xxx or #xxxxxx, got {}".format(color))
     else:
         raise Exception("Expected a color, got {}".format(color))
+    return Color(red=red, green=green, blue=blue, white=white, alpha=alpha)
 
 
 def parse_ratio(ratio):

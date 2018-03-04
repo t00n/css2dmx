@@ -1,3 +1,5 @@
 #mini-dekker {
-	auto: show;
+	color: rgbwa(255, 0, 0, 255, 1);
+	strobe: 0.5;
+	rotation: auto 0;
 }
