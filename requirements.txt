@@ -2,4 +2,6 @@ cssutils
 tinycss2
 pyserial
 pytest
+protobuf
+jsonschema
 
