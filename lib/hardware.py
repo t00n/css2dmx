@@ -1,5 +1,6 @@
-from collections import defaultdict
 import json
+from glob import glob
+
 from jsonschema import validate
 
 # BASIC
@@ -154,7 +155,6 @@ schema = {
 
 
 def load_devices():
-    from glob import glob
     devices = {}
     for file in glob("devices/*"):
         with open(file) as f:
