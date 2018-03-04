@@ -1,0 +1,28 @@
+{
+	"name": "mini-dekker",
+	"mapping": {
+		"color": {
+			"red": {
+				"chan": 1
+			},
+			"green": {
+				"chan": 2
+			},
+			"blue": {
+				"chan": 3
+			},
+			"alpha": {
+				"chan": 6
+			}
+		},
+		"strobe": {
+			"speed": {
+				"chan": 5,
+				"range": [
+					10,
+					255
+				]
+			}
+		}
+	}
+}
