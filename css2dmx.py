@@ -68,15 +68,12 @@ def run(devices, tree, css, verbose=False):
     apply_style_on_dom(tree, css)
     tree.print()
     keyframes = css.keyframes
-    old_state = None
     now = datetime.now()
     for t in trange(interval=0.02):
         state = compute_dmx(tree, devices, keyframes, t.timestamp() - now.timestamp())
-        if state != old_state:
-            old_state = state
-            send_dmx(state)
-            if verbose:
-                print(state)
+        send_dmx(state)
+        if verbose:
+            print(state)
 
 if __name__ == '__main__':
     import sys

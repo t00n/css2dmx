@@ -10,6 +10,14 @@ def apply_style_on_dom(tree, css):
                     node.add_style(prop.name, prop.value)
 
 
+def compute_dmx_value(value, attr_desc):
+    if 'enum' in attr_desc:
+        return attr_desc['enum'][value][0]
+    else:
+        attr_range = attr_desc.get('range', [0, 255])
+        return int(attr_range[0] + (attr_range[1] - attr_range[0]) * value)
+
+
 def compute_dmx_color(color, device, offset):
     res = []
     res.append((device['color']['red']['chan'] + offset, color[0]))
@@ -17,6 +25,12 @@ def compute_dmx_color(color, device, offset):
     res.append((device['color']['blue']['chan'] + offset, color[2]))
     if 'alpha' in device['color'] and len(color) == 4:
         res.append((device['color']['alpha']['chan'] + offset, color[3]))
+    return res
+
+
+def compute_dmx_strobe(strobe, device, offset):
+    res = []
+    res.append((device['strobe']['speed']['chan'] + offset, compute_dmx_value(strobe, device['strobe']['speed'])))
     return res
 
 
@@ -30,6 +44,8 @@ def compute_dmx(tree, devices, keyframes, t):
                     dmx_val = []
                     if prop == "color":
                         dmx_val = compute_dmx_color(attrs, devices[node.tag], node.offset)
+                    elif prop == "strobe":
+                        dmx_val = compute_dmx_strobe(attrs, devices[node.tag], node.offset)
                     dmx.extend(dmx_val)
     return sorted(dmx, key=lambda x: x[0])
 
