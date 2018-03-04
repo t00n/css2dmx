@@ -1,0 +1,16 @@
+{
+	"name": "led-ws2811",
+	"mapping": {
+		"color": {
+			"red": {
+				"chan": 1
+			},
+			"green": {
+				"chan": 2
+			},
+			"blue": {
+				"chan": 3
+			}
+		}
+	}
+}

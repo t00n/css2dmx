@@ -1,0 +1,137 @@
+{
+  "name": "chronosIII",
+  "mapping": {
+    "color": {
+      "red": {
+        "chan": 1,
+        "cond": [
+          {
+            "chan": 4,
+            "range": [
+              0,
+              15
+            ]
+          },
+          {
+            "chan": 6,
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
+      },
+      "green": {
+        "chan": 2,
+        "cond": [
+          {
+            "chan": 4,
+            "range": [
+              0,
+              15
+            ]
+          },
+          {
+            "chan": 6,
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
+      },
+      "blue": {
+        "chan": 3,
+        "cond": [
+          {
+            "chan": 4,
+            "range": [
+              0,
+              15
+            ]
+          },
+          {
+            "chan": 6,
+            "range": [
+              0,
+              127
+            ]
+          }
+        ]
+      },
+      "alpha": {
+        "chan": 7
+      },
+      "name": {
+        "chan": 4,
+        "enum": {}
+      }
+    },
+    "strobe": {
+      "speed": {
+        "chan": 5,
+        "range": [
+          16,
+          255
+        ]
+      }
+    },
+    "pulse": {
+      "speed": {
+        "chan": 5,
+        "cond": [
+          {
+            "chan": 6,
+            "range": [
+              32,
+              127
+            ]
+          }
+        ]
+      },
+      "direction": {
+        "chan": 6,
+        "enum": {
+          "normal": [
+            32,
+            63
+          ],
+          "reverse": [
+            64,
+            95
+          ],
+          "alternate": [
+            96,
+            127
+          ]
+        }
+      }
+    },
+    "auto": {
+      "name": {
+        "chan": 6,
+        "enum": {
+          "fade-transition": [
+            128,
+            159
+          ],
+          "snap-3": [
+            160,
+            191
+          ],
+          "snap-7": [
+            192,
+            223
+          ],
+          "sound": [
+            224,
+            255
+          ]
+        }
+      },
+      "speed": {
+        "chan": 5
+      }
+    }
+  }
+}
