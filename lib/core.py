@@ -10,14 +10,21 @@ def apply_style_on_dom(tree, css):
                     node.add_style(prop.name, prop.value)
 
 
-def compute_dmx(tree, hw, keyframes, t):
+def compute_dmx(tree, devices, keyframes, t):
     dmx = []
     for node in tree.walk():
-        if node.id in hw:
+        if node.tag in devices:
             style = compute_style(node, keyframes, t)
-            for prop, val in style.items():
-                if prop in hw[node.id]:
-                    dmx.extend(list(zip(hw[node.id][prop], val)))
+            for prop, attrs in style.items():
+                if prop in devices[node.tag]:
+                    dmx_val = []
+                    if prop == "color":
+                        dmx_val.append((devices[node.tag]['color']['red']['chan'], attrs[0]))
+                        dmx_val.append((devices[node.tag]['color']['green']['chan'], attrs[1]))
+                        dmx_val.append((devices[node.tag]['color']['blue']['chan'], attrs[2]))
+                        if 'alpha' in devices[node.tag]['color'] and len(attrs) == 4:
+                            dmx_val.append((devices[node.tag]['color']['alpha']['chan'], attrs[3]))
+                    dmx.extend(dmx_val)
     return sorted(dmx, key=lambda x: x[0])
 
 

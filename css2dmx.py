@@ -7,7 +7,7 @@ import array
 import ola.ClientWrapper
 
 from lib.core import apply_style_on_dom, compute_dmx
-from lib.hardware import parse_hw_file
+from lib.hardware import load_devices
 from lib.tree import parse_tree_file
 from lib.css import parse_css_file
 from lib.utils import trange
@@ -64,14 +64,14 @@ def send_dmx(state):
     send_serial(state)
 
 
-def run(hw, tree, css, verbose=False):
+def run(devices, tree, css, verbose=False):
     apply_style_on_dom(tree, css)
     tree.print()
     keyframes = css.keyframes
     old_state = None
     now = datetime.now()
     for t in trange(interval=0.02):
-        state = compute_dmx(tree, hw, keyframes, t.timestamp() - now.timestamp())
+        state = compute_dmx(tree, devices, keyframes, t.timestamp() - now.timestamp())
         if state != old_state:
             old_state = state
             send_dmx(state)
@@ -83,14 +83,13 @@ if __name__ == '__main__':
     import os
     dir_path = sys.argv[1]
     dir_name = os.path.basename(dir_path)
-    hw_file = os.path.join(dir_path, dir_name + ".hw")
-    tree_file = os.path.join(dir_path, dir_name + ".tree")
-    css_file = os.path.join(dir_path, dir_name + ".css")
+    tree_file = os.path.join(dir_path, "tree.xml")
+    css_file = os.path.join(dir_path, "style.css")
 
     verbose = len(sys.argv) == 3 and sys.argv[2] == "-v"
 
-    hw = parse_hw_file(hw_file)
+    devices = load_devices()
     tree = parse_tree_file(tree_file)
     css = parse_css_file(css_file)
 
-    run(hw, tree, css, verbose)
+    run(devices, tree, css, verbose)
