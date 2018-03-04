@@ -6,7 +6,7 @@ Because who has never dreamed of controlling DMX512 devices with CSS stylesheets
 
 ## How ?
 
-Describe your devices using JSON (in the `devices` directory) and, for each project, your DOM (DMX Object Model) using XML and your stylesheets using CSS.
+Describe your devices globally using JSON (in the `devices` directory) and, for each project, your DOM (DMX Object Model) using XML and your style using DSS (DMX stylesheets).
 
 Run css2dmx and watch the magic happen !
 
