@@ -52,6 +52,16 @@ def compute_dmx_auto(auto, device, offset):
     return res
 
 
+def compute_dmx_rotation(rotation, device, offset):
+    res = []
+    mode, position, speed = rotation.mode, rotation.position, rotation.speed
+    if mode == 'manual':
+        res.append(compute_dmx_value(position, device['rotation']['position'], offset))
+    elif mode == 'auto':
+        res.append(compute_dmx_value(speed, device['rotation']['speed'], offset))
+    return res
+
+
 def compute_dmx(tree, devices, keyframes, t):
     dmx = []
     for node in tree.walk():
@@ -68,6 +78,9 @@ def compute_dmx(tree, devices, keyframes, t):
                         dmx_val = compute_dmx_pulse(attrs, devices[node.tag], node.offset)
                     elif prop == "auto":
                         dmx_val = compute_dmx_auto(attrs, devices[node.tag], node.offset)
+                    elif prop == "rotation":
+                        dmx_val = compute_dmx_rotation(attrs, devices[node.tag], node.offset)
+                        (attrs, devices[node.tag], node.offset)
                     dmx.extend(dmx_val)
     return sorted(dmx, key=lambda x: x[0])
 
