@@ -93,25 +93,6 @@ def parse_direction(direction):
         raise Exception("Expected direction, got '{}'".format(direction))
 
 
-Transition = namedtuple('Transition', ['duration', 'function'])
-
-
-def parse_transition(transition):
-    transitions = {}
-    # e.g. "transition: color 5s"
-    # e.g. "transition: color 0.5s linear"
-    match = re.match(r'(\w+) (\d+(?:\.\d+)?m?s)(?: (.+))?', transition)
-    groups = match.groups()
-    if groups[0] is not None:
-        target_prop = groups[0]
-        if groups[1] is not None:
-            duration = parse_time(groups[1])
-        else:
-            duration = 0
-        function = parse_timing_function(groups[2])
-        transitions[target_prop] = Transition(duration=duration, function=function)
-    return transitions
-
 Animation = namedtuple('Animation', ['duration', 'function', 'delay', 'iteration', 'direction'])
 
 
