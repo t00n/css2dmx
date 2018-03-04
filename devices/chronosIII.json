@@ -61,10 +61,6 @@
       },
       "alpha": {
         "chan": 7
-      },
-      "name": {
-        "chan": 4,
-        "enum": {}
       }
     },
     "strobe": {

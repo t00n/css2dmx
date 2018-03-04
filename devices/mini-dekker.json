@@ -11,6 +11,9 @@
 			"blue": {
 				"chan": 3
 			},
+			"white": {
+				"chan": 4
+			},
 			"alpha": {
 				"chan": 6
 			}

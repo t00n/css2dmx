@@ -22,11 +22,13 @@ def compute_dmx_value(css_value, attr_desc, offset):
 
 def compute_dmx_color(color, device, offset):
     res = []
-    res.append(compute_dmx_value(color[0], device['color']['red'], offset))
-    res.append(compute_dmx_value(color[1], device['color']['green'], offset))
-    res.append(compute_dmx_value(color[2], device['color']['blue'], offset))
-    if 'alpha' in device['color'] and len(color) == 4:
-        res.append(compute_dmx_value(color[3], device['color']['alpha'], offset))
+    res.append(compute_dmx_value(color.red, device['color']['red'], offset))
+    res.append(compute_dmx_value(color.green, device['color']['green'], offset))
+    res.append(compute_dmx_value(color.blue, device['color']['blue'], offset))
+    if 'white' in device['color']:
+        res.append(compute_dmx_value(color.white, device['color']['white'], offset))
+    if 'alpha' in device['color']:
+        res.append(compute_dmx_value(color.alpha, device['color']['alpha'], offset))
     return res
 
 
@@ -146,6 +148,5 @@ def compute_style(node, keyframes, t):
             for name, value in props_animation.items():
                 style[name] = value
         else:
-            value = node.style[prop]
-        style[prop] = value
+            style[prop] = node.style[prop]
     return style

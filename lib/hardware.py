@@ -51,7 +51,8 @@ channel_schema = {
     },
     "required": [
         "chan"
-    ]
+    ],
+    "additionalProperties": False
 }
 
 
@@ -71,13 +72,10 @@ color_schema = {
         "red": channel_schema,
         "green": channel_schema,
         "blue": channel_schema,
+        "white": channel_schema,
         "alpha": channel_schema
     },
-    "required": [
-        "red",
-        "green",
-        "blue"
-    ]
+    "additionalProperties": False
 }
 
 # STROBE
@@ -85,7 +83,8 @@ strobe_schema = {
     "type": "object",
     "properties": {
         "speed": channel_schema
-    }
+    },
+    "additionalProperties": False
 }
 
 # PULSE
@@ -98,7 +97,8 @@ pulse_direction_schema = {
     "required": [
         "chan",
         "enum"
-    ]
+    ],
+    "additionalProperties": False
 }
 
 pulse_schema = {
@@ -110,7 +110,8 @@ pulse_schema = {
     "required": [
         "speed",
         "direction"
-    ]
+    ],
+    "additionalProperties": False
 }
 
 # AUTO
@@ -123,7 +124,8 @@ auto_value_schema = {
     "required": [
         "chan",
         "enum"
-    ]
+    ],
+    "additionalProperties": False
 }
 
 auto_schema = {
@@ -134,7 +136,8 @@ auto_schema = {
     },
     "required": [
         "name"
-    ]
+    ],
+    "additionalProperties": False
 }
 
 # ROTATION
@@ -166,7 +169,8 @@ schema = {
                 "rotation": rotation_schema
             }
         }
-    }
+    },
+    "additionalProperties": False
 }
 
 
