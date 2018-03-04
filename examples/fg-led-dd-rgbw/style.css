@@ -1,0 +1,6 @@
+#fg-led-dd-rgbw {
+	color: all;
+	rotation: auto 0.2;
+	strobe: 0.8;
+	auto: sound 1;
+}

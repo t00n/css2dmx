@@ -1,0 +1,52 @@
+{
+	"name": "fg-led-dd-rgbw",
+	"mapping": {
+		"color": {
+			"name": {
+				"chan": 1,
+				"enum": {
+					"red": [10, 19],
+					"green": [20, 29],
+					"blue": [30, 39],
+					"white": [40, 49],
+					"red-green": [50, 59],
+					"red-blue": [60, 69],
+					"red-white": [70, 79],
+					"green-blue": [80, 89],
+					"green-white": [90, 99],
+					"blue-white": [100, 109],
+					"red-green-blue": [110, 119],
+					"red-green-white": [120, 129],
+					"red-blue-white": [130, 139],
+					"green-blue-white": [140, 149],
+					"red-green-blue-white": [150, 159],
+					"all": [150, 159]
+				}
+			}
+		},
+		"rotation": {
+			"speed": {
+				"chan": 4
+			}
+		},
+		"strobe": {
+			"speed": {
+				"chan": 2,
+				"range": [9, 255]
+			}
+		},
+		"auto": {
+			"name": {
+				"chan": 1,
+				"enum": {
+					"color": [160, 229],
+					"sound": [230, 255]
+				}
+			},
+			"speed": {
+				"chan": 3,
+				"range": [9, 255]
+			}
+		}
+	}
+}
