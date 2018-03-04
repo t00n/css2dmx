@@ -85,6 +85,23 @@ def parse_auto(auto):
     return Auto(name=name, speed=speed)
 
 
+# ROTATION
+Rotation = namedtuple('Rotation', ['mode', 'value'])
+
+
+def parse_rotation(rotation):
+    values = rotation.split(" ")
+    if len(values) == 1:
+        value = parse_ratio(values[0])
+        return Rotation(mode='manual', value=value)
+    elif len(values) == 2 and values[0] == 'auto':
+        value = parse_ratio(values[1])
+        return Rotation(mode='auto', value=value)
+    else:
+        raise Exception("Expected rotation as `float` or `auto float`, got {}".format(rotation))
+
+
+# ANIMATION
 def parse_time(duration):
     if duration[-2:] == 'ms':
         return float(duration[:-2]) / 1000
@@ -173,7 +190,7 @@ Rule = namedtuple('Rule', ['selectors', 'properties'])
 Selector = namedtuple('Selector', ['type', 'value'])
 Property = namedtuple('Property', ['name', 'value'])
 
-IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'auto', 'animation']
+IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'auto', 'rotation', 'animation']
 
 
 def parse_properties(style):
@@ -190,6 +207,8 @@ def parse_properties(style):
                 val = parse_auto(style[prop])
             elif prop == "animation":
                 val = parse_animation(style[prop])
+            elif prop == "rotation":
+                val = parse_rotation(style[prop])
             properties.append(Property(name=prop, value=val))
     return properties
 
