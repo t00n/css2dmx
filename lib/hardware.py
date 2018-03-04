@@ -138,6 +138,17 @@ auto_schema = {
     ]
 }
 
+# ROTATION
+rotation_schema = {
+    "type": "object",
+    "properties": {
+        "position": channel_schema,
+        "speed": channel_schema
+    },
+    "minProperties": 1,
+    "additionalProperties": False
+}
+
 # ROOT
 schema = {
     "$schema": "http://json-schema.org/schema#",
@@ -152,7 +163,8 @@ schema = {
                 "color": color_schema,
                 "strobe": strobe_schema,
                 "pulse": pulse_schema,
-                "auto": auto_schema
+                "auto": auto_schema,
+                "rotation": rotation_schema
             }
         }
     }

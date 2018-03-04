@@ -23,6 +23,22 @@
 					255
 				]
 			}
+		},
+		"rotation": {
+			"position": {
+				"chan": 7,
+				"range": [
+					0,
+					127
+				]
+			},
+			"speed": {
+				"chan": 7,
+				"range": [
+					128,
+					255
+				]
+			}
 		}
 	}
 }

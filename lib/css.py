@@ -86,17 +86,17 @@ def parse_auto(auto):
 
 
 # ROTATION
-Rotation = namedtuple('Rotation', ['mode', 'value'])
+Rotation = namedtuple('Rotation', ['mode', 'position', 'speed'])
 
 
 def parse_rotation(rotation):
     values = rotation.split(" ")
     if len(values) == 1:
-        value = parse_ratio(values[0])
-        return Rotation(mode='manual', value=value)
+        position = parse_ratio(values[0])
+        return Rotation(mode='manual', position=position, speed=0)
     elif len(values) == 2 and values[0] == 'auto':
-        value = parse_ratio(values[1])
-        return Rotation(mode='auto', value=value)
+        speed = parse_ratio(values[1])
+        return Rotation(mode='auto', position=0, speed=speed)
     else:
         raise Exception("Expected rotation as `float` or `auto float`, got {}".format(rotation))
 
