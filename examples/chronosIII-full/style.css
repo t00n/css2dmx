@@ -2,4 +2,5 @@
 	color: rgba(255, 0, 0, 1);
 	strobe: 1;
 	pulse: normal 1;
+	auto: fade-transition;
 }

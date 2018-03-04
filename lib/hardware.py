@@ -129,7 +129,8 @@ auto_value_schema = {
 auto_schema = {
     "type": "object",
     "properties": {
-        "value": auto_value_schema
+        "value": auto_value_schema,
+        "speed": channel_schema
     },
     "required": [
         "value"
