@@ -71,9 +71,9 @@ def run(devices, tree, css, verbose=False):
     now = datetime.now()
     for t in trange(interval=0.02):
         state = compute_dmx(tree, devices, keyframes, t.timestamp() - now.timestamp())
-        send_dmx(state)
         if verbose:
             print(state)
+        send_dmx(state)
 
 if __name__ == '__main__':
     import sys

@@ -10,27 +10,29 @@ def apply_style_on_dom(tree, css):
                     node.add_style(prop.name, prop.value)
 
 
-def compute_dmx_value(value, attr_desc):
+def compute_dmx_value(css_value, attr_desc, offset):
+    address = attr_desc['chan'] + offset
     if 'enum' in attr_desc:
-        return attr_desc['enum'][value][0]
+        dmx_value = attr_desc['enum'][css_value][0]
     else:
         attr_range = attr_desc.get('range', [0, 255])
-        return int(attr_range[0] + (attr_range[1] - attr_range[0]) * value)
+        dmx_value = int(attr_range[0] + (attr_range[1] - attr_range[0]) * css_value / 255)
+    return (address, dmx_value)
 
 
 def compute_dmx_color(color, device, offset):
     res = []
-    res.append((device['color']['red']['chan'] + offset, color[0]))
-    res.append((device['color']['green']['chan'] + offset, color[1]))
-    res.append((device['color']['blue']['chan'] + offset, color[2]))
+    res.append(compute_dmx_value(color[0], device['color']['red'], offset))
+    res.append(compute_dmx_value(color[1], device['color']['green'], offset))
+    res.append(compute_dmx_value(color[2], device['color']['blue'], offset))
     if 'alpha' in device['color'] and len(color) == 4:
-        res.append((device['color']['alpha']['chan'] + offset, color[3]))
+        res.append(compute_dmx_value(color[3], device['color']['alpha'], offset))
     return res
 
 
 def compute_dmx_strobe(strobe, device, offset):
     res = []
-    res.append((device['strobe']['speed']['chan'] + offset, compute_dmx_value(strobe, device['strobe']['speed'])))
+    res.append(compute_dmx_value(strobe, device['strobe']['speed'], offset))
     return res
 
 

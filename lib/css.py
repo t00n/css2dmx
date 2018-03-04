@@ -47,7 +47,7 @@ def parse_strobe(strobe):
             raise Exception("Expected strobe speed between 0 and 1, got {}".format(strobe))
     except ValueError:
         raise Exception("Expected strobe speed as float, got {}".format(strobe))
-    return speed
+    return int(speed * 255)
 
 
 def parse_time(duration):
