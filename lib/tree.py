@@ -26,6 +26,8 @@ class Node:
                 yield node
             elif selector.type == 'class' and selector.value in node.klass:
                 yield node
+            elif selector.type == 'tag' and selector.value == node.tag:
+                yield node
 
     def __iter__(self):
         yield from self.children

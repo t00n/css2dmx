@@ -234,11 +234,15 @@ def parse_rules(css):
             for s in r.selectorList:
                 if s.selectorText[0] == "#":
                     typ = 'id'
+                    value = s.selectorText[1:]
                 elif s.selectorText[0] == '.':
                     typ = 'class'
+                    value = s.selectorText[1:]
+                elif re.match(r'[\w-]+', s.selectorText):
+                    typ = 'tag'
+                    value = s.selectorText
                 else:
                     raise NotImplementedError("'{}' selector type is not implemented".format(s.selectorText))
-                value = s.selectorText[1:]
                 selectors.append(Selector(type=typ, value=value))
             properties = parse_properties(r.style)
             rules.append(Rule(selectors=selectors, properties=properties))
