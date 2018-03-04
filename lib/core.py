@@ -48,7 +48,8 @@ def compute_dmx_auto(auto, device, offset):
     res = []
     name, speed = auto.name, auto.speed
     res.append(compute_dmx_value(name, device['auto']['name'], offset))
-    res.append(compute_dmx_value(speed, device['auto']['speed'], offset))
+    if 'speed' in device['auto']:
+        res.append(compute_dmx_value(speed, device['auto']['speed'], offset))
     return res
 
 

@@ -1,5 +1,3 @@
 #mini-dekker {
-	color: rgba(255, 0, 0, 1);
-	strobe: 0.5;
-	rotation: auto 0;
+	auto: show;
 }

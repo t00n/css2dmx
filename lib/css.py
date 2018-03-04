@@ -71,14 +71,14 @@ def parse_pulse(pulse):
 # AUTO
 Auto = namedtuple('Auto', ['name', 'speed'])
 
-AUTO_NAMES = ["fade-transition", "snap-3", "snap-7", "sound"]
-
 
 def parse_auto(auto):
     try:
-        name, speed = [x.strip() for x in auto.split(" ")]
-        if name not in AUTO_NAMES:
-            raise Exception("Expected auto name, got {}".format(name))
+        values = [x.strip() for x in auto.split(" ")]
+        if len(values) == 1:
+            name, speed = values[0], 0
+        elif len(values) == 2:
+            name, speed = values
         speed = parse_ratio(speed)
     except ValueError:
         raise Exception("Expected auto, got {}".format(auto))

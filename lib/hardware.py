@@ -133,8 +133,7 @@ auto_schema = {
         "speed": channel_schema
     },
     "required": [
-        "name",
-        "speed"
+        "name"
     ]
 }
 
