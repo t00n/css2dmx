@@ -73,7 +73,8 @@ color_schema = {
         "green": channel_schema,
         "blue": channel_schema,
         "white": channel_schema,
-        "alpha": channel_schema
+        "alpha": channel_schema,
+        "name": enum_schema([])
     },
     "additionalProperties": False
 }

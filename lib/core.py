@@ -22,13 +22,16 @@ def compute_dmx_value(css_value, attr_desc, offset):
 
 def compute_dmx_color(color, device, offset):
     res = []
-    res.append(compute_dmx_value(color.red, device['color']['red'], offset))
-    res.append(compute_dmx_value(color.green, device['color']['green'], offset))
-    res.append(compute_dmx_value(color.blue, device['color']['blue'], offset))
-    if 'white' in device['color']:
-        res.append(compute_dmx_value(color.white, device['color']['white'], offset))
-    if 'alpha' in device['color']:
-        res.append(compute_dmx_value(color.alpha, device['color']['alpha'], offset))
+    if color.name != '':
+        res.append(compute_dmx_value(color.name, device['color']['name'], offset))
+    else:
+        res.append(compute_dmx_value(color.red, device['color']['red'], offset))
+        res.append(compute_dmx_value(color.green, device['color']['green'], offset))
+        res.append(compute_dmx_value(color.blue, device['color']['blue'], offset))
+        if 'white' in device['color']:
+            res.append(compute_dmx_value(color.white, device['color']['white'], offset))
+        if 'alpha' in device['color']:
+            res.append(compute_dmx_value(color.alpha, device['color']['alpha'], offset))
     return res
 
 
@@ -135,9 +138,9 @@ def compute_animations(animations, keyframes, t):
             for low_prop in lower_properties:
                 for high_prop in higher_properties:
                     if low_prop.name == high_prop.name:
-                        value = compute_prop_with_ratio(low_prop.value, high_prop.value, y)
-                        if low_prop.name == 'color':
-                            style[low_prop.name] = Color(*value)
+                        if low_prop.name == 'color' and low_prop.value.name == '':
+                            value = compute_prop_with_ratio(low_prop.value[:5], high_prop.value[:5], y)
+                            style[low_prop.name] = Color(*value, '')
     return style
 
 

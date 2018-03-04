@@ -21,12 +21,11 @@ def get_timing_function_coefs(function):
     return p1, p2
 
 
-Color = namedtuple('Color', ['red', 'green', 'blue', 'white', 'alpha'])
+Color = namedtuple('Color', ['red', 'green', 'blue', 'white', 'alpha', 'name'])
 
 
 def parse_color(color):
-    white = 0
-    alpha = 255
+    red, green, blue, white, alpha, name = 0, 0, 0, 0, 255, ''
     if color[:5] == "rgbwa":
         splitted = color[6:-1].split(',')
         red, green, blue, white = [int(x.strip()) for x in splitted[:4]]
@@ -47,9 +46,11 @@ def parse_color(color):
             red, green, blue = [int(color[1 + 2 * i:3 + 2 * i], 16) for i in range(3)]
         else:
             raise Exception("Expected #xxx or #xxxxxx, got {}".format(color))
+    elif re.match(r'[\w-]+', color):
+        name = color
     else:
         raise Exception("Expected a color, got {}".format(color))
-    return Color(red=red, green=green, blue=blue, white=white, alpha=alpha)
+    return Color(red=red, green=green, blue=blue, white=white, alpha=alpha, name=name)
 
 
 def parse_ratio(ratio):
