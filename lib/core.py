@@ -44,6 +44,14 @@ def compute_dmx_pulse(pulse, device, offset):
     return res
 
 
+def compute_dmx_auto(auto, device, offset):
+    res = []
+    name, speed = auto.name, auto.speed
+    res.append(compute_dmx_value(name, device['auto']['name'], offset))
+    res.append(compute_dmx_value(speed, device['auto']['speed'], offset))
+    return res
+
+
 def compute_dmx(tree, devices, keyframes, t):
     dmx = []
     for node in tree.walk():
@@ -58,6 +66,8 @@ def compute_dmx(tree, devices, keyframes, t):
                         dmx_val = compute_dmx_strobe(attrs, devices[node.tag], node.offset)
                     elif prop == "pulse":
                         dmx_val = compute_dmx_pulse(attrs, devices[node.tag], node.offset)
+                    elif prop == "auto":
+                        dmx_val = compute_dmx_auto(attrs, devices[node.tag], node.offset)
                     dmx.extend(dmx_val)
     return sorted(dmx, key=lambda x: x[0])
 
