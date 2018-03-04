@@ -1,7 +1,10 @@
 import json
 from glob import glob
+from logging import getLogger
 
 from jsonschema import validate
+
+logger = getLogger(__name__)
 
 # BASIC
 address_schema = {
@@ -162,6 +165,6 @@ def load_devices():
         validate(data, schema)
         name = data['name']
         if name in devices:
-            print("WARNING: overwriting device {}".format(name))
+            logger.warn("overwriting device {}".format(name))
         devices[name] = data['mapping']
     return devices

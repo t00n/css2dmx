@@ -2,8 +2,9 @@ from xml.etree import ElementTree as ET
 
 
 class Node:
-    def __init__(self, tag, *, id='', children=[], klass=""):
+    def __init__(self, tag, *, offset=0, id='', children=[], klass=""):
         self.tag = tag
+        self.offset = offset
         self.id = id
         self.children = children
         self.klass = klass.split(" ")
@@ -46,7 +47,11 @@ class Node:
 
 def parse_node(node):
     children = [parse_node(child) for child in node]
-    return Node(node.tag, id=node.attrib.get('id', ''), klass=node.attrib.get('class', ''), children=children)
+    return Node(node.tag,
+                offset=int(node.attrib.get('offset', 0)),
+                id=node.attrib.get('id', ''),
+                klass=node.attrib.get('class', ''),
+                children=children)
 
 
 def parse_tree_file(filename):

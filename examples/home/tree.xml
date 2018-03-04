@@ -1,21 +1,21 @@
 <root>
-    <chronosIII />
-    <imac>
-        <led0 />
-        <led1 />
-        <led2 />
-        <led3 />
-        <led4 />
-        <led5 />
-        <led6 />
-        <led7 />
-        <led8 />
-        <led9 />
-        <led10 />
-        <led11 />
-        <led12 />
-        <led13 />
-        <led14 />
-        <led15 />
-    </imac>
+    <chronosIII id="chronosIII" />
+    <node id="imac">
+        <led-ws2811 offset="41" />
+        <led-ws2811 offset="44" />
+        <led-ws2811 offset="47" />
+        <led-ws2811 offset="50" />
+        <led-ws2811 offset="53" />
+        <led-ws2811 offset="56" />
+        <led-ws2811 offset="59" />
+        <led-ws2811 offset="62" />
+        <led-ws2811 offset="65" />
+        <led-ws2811 offset="68" />
+        <led-ws2811 offset="71" />
+        <led-ws2811 offset="74" />
+        <led-ws2811 offset="77" />
+        <led-ws2811 offset="80" />
+        <led-ws2811 offset="83" />
+        <led-ws2811 offset="86" />
+    </node>
 </root>
