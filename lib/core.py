@@ -10,6 +10,16 @@ def apply_style_on_dom(tree, css):
                     node.add_style(prop.name, prop.value)
 
 
+def compute_dmx_color(color, device):
+    res = []
+    res.append((device['color']['red']['chan'], color[0]))
+    res.append((device['color']['green']['chan'], color[1]))
+    res.append((device['color']['blue']['chan'], color[2]))
+    if 'alpha' in device['color'] and len(color) == 4:
+        res.append((device['color']['alpha']['chan'], color[3]))
+    return res
+
+
 def compute_dmx(tree, devices, keyframes, t):
     dmx = []
     for node in tree.walk():
@@ -19,11 +29,7 @@ def compute_dmx(tree, devices, keyframes, t):
                 if prop in devices[node.tag]:
                     dmx_val = []
                     if prop == "color":
-                        dmx_val.append((devices[node.tag]['color']['red']['chan'], attrs[0]))
-                        dmx_val.append((devices[node.tag]['color']['green']['chan'], attrs[1]))
-                        dmx_val.append((devices[node.tag]['color']['blue']['chan'], attrs[2]))
-                        if 'alpha' in devices[node.tag]['color'] and len(attrs) == 4:
-                            dmx_val.append((devices[node.tag]['color']['alpha']['chan'], attrs[3]))
+                        dmx_val = compute_dmx_color(attrs, devices[node.tag])
                     dmx.extend(dmx_val)
     return sorted(dmx, key=lambda x: x[0])
 
