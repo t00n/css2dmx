@@ -68,6 +68,23 @@ def parse_pulse(pulse):
     return Pulse(direction=direction, speed=speed)
 
 
+# AUTO
+Auto = namedtuple('Auto', ['name', 'speed'])
+
+AUTO_NAMES = ["fade-transition", "snap-3", "snap-7", "sound"]
+
+
+def parse_auto(auto):
+    try:
+        name, speed = [x.strip() for x in auto.split(" ")]
+        if name not in AUTO_NAMES:
+            raise Exception("Expected auto name, got {}".format(name))
+        speed = parse_ratio(speed)
+    except ValueError:
+        raise Exception("Expected auto, got {}".format(auto))
+    return Auto(name=name, speed=speed)
+
+
 def parse_time(duration):
     if duration[-2:] == 'ms':
         return float(duration[:-2]) / 1000
@@ -156,7 +173,7 @@ Rule = namedtuple('Rule', ['selectors', 'properties'])
 Selector = namedtuple('Selector', ['type', 'value'])
 Property = namedtuple('Property', ['name', 'value'])
 
-IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'animation']
+IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'auto', 'animation']
 
 
 def parse_properties(style):
@@ -169,6 +186,8 @@ def parse_properties(style):
                 val = parse_strobe(style[prop])
             elif prop == "pulse":
                 val = parse_pulse(style[prop])
+            elif prop == "auto":
+                val = parse_auto(style[prop])
             elif prop == "animation":
                 val = parse_animation(style[prop])
             properties.append(Property(name=prop, value=val))
