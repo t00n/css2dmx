@@ -40,6 +40,16 @@ def parse_color(color):
         raise Exception("Expected a color, got {}".format(color))
 
 
+def parse_strobe(strobe):
+    try:
+        speed = float(strobe)
+        if speed < 0 or speed > 1:
+            raise Exception("Expected strobe speed between 0 and 1, got {}".format(strobe))
+    except ValueError:
+        raise Exception("Expected strobe speed as float, got {}".format(strobe))
+    return speed
+
+
 def parse_time(duration):
     if duration[-2:] == 'ms':
         return float(duration[:-2]) / 1000
@@ -128,7 +138,7 @@ Rule = namedtuple('Rule', ['selectors', 'properties'])
 Selector = namedtuple('Selector', ['type', 'value'])
 Property = namedtuple('Property', ['name', 'value'])
 
-IMPLEMENTED_PROPERTIES = ['color', 'animation']
+IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'animation']
 
 
 def parse_properties(style):
@@ -137,6 +147,8 @@ def parse_properties(style):
         if prop in style:
             if prop == "color":
                 val = parse_color(style[prop])
+            elif prop == "strobe":
+                val = parse_strobe(style[prop])
             elif prop == "animation":
                 val = parse_animation(style[prop])
             properties.append(Property(name=prop, value=val))
