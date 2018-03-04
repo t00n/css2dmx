@@ -1,5 +1,41 @@
 #mini-dekker {
-	color: rgbwa(255, 0, 0, 255, 1);
+	animation: mixcolors 5s ease-in 0s infinite;
 	strobe: 0.5;
 	rotation: auto 0;
+}
+
+@keyframes mixcolors {
+	0% {
+		color: rgbw(255, 0, 0, 0);
+	}
+	10% {
+		color: rgbw(127, 127, 0, 0);
+	}
+	20% {
+		color: rgbw(0, 255, 0, 0);
+	}
+	30% {
+		color: rgbw(0, 127, 127, 0);
+	}
+	40% {
+		color: rgbw(0, 0, 255, 0);
+	}
+	50% {
+		color: rgbw(0, 0, 127, 127);
+	}
+	60% {
+		color: rgbw(0, 0, 0, 255);
+	}
+	70% {
+		color: rgbw(0, 0, 0, 127);
+	}
+	80% {
+		color: rgbw(127, 0, 0, 0);
+	}
+	90% {
+		color: rgbw(0, 0, 0, 255);
+	}
+	100% {
+		color: rgbw(0, 0, 0, 255);
+	}
 }

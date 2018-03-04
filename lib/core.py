@@ -1,5 +1,5 @@
 from .utils import compute_cubic_bezier, de_casteljau
-from .css import get_timing_function_coefs
+from .css import get_timing_function_coefs, Color
 
 
 def apply_style_on_dom(tree, css):
@@ -136,7 +136,8 @@ def compute_animations(animations, keyframes, t):
                 for high_prop in higher_properties:
                     if low_prop.name == high_prop.name:
                         value = compute_prop_with_ratio(low_prop.value, high_prop.value, y)
-                        style[low_prop.name] = value
+                        if low_prop.name == 'color':
+                            style[low_prop.name] = Color(*value)
     return style
 
 
