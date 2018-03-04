@@ -177,7 +177,7 @@ def parse_animation(value):
     # e.g. "red2green 5s ease 0s infinite alternate"
         match = re.match(r'(\w+)'
                          r'(?: (\d+m?s))?'
-                         r'(?: (\w+(?:\(.*\))?))?'
+                         r'(?: ([\w-]+(?:\(.*\))?))?'
                          r'(?: (\d+m?s))?'
                          r'(?: (infinite|\d+))?'
                          r'(?: ([\w-]+))?', anim)
