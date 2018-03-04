@@ -153,21 +153,6 @@ schema = {
 }
 
 
-def parse_hw(root):
-    if not isinstance(root, dict):
-        raise Exception("Expected a dict on root-level, got {}".format(root))
-    # checks that addresses are unique and issues a WARNING if they aren't
-    addresses = defaultdict(set)
-    for name, desc in root.items():
-        device_addresses = parse_device(name, desc)
-        for other_name, other_addresses in addresses.items():
-            for addr in device_addresses:
-                if addr in other_addresses:
-                    print("WARNING: address {} in '{}' conflicts with '{}'".format(addr, name, other_name))
-        addresses[name].update(device_addresses)
-    return root
-
-
 def load_devices():
     from glob import glob
     devices = {}
