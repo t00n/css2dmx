@@ -312,6 +312,24 @@ def parse_properties(style):
     return properties
 
 
+def parse_selectors(selector_list):
+    selectors = []
+    for s in selector_list:
+        if s.selectorText[0] == "#":
+            typ = 'id'
+            value = s.selectorText[1:]
+        elif s.selectorText[0] == '.':
+            typ = 'class'
+            value = s.selectorText[1:]
+        elif re.match(r'[\w-]+', s.selectorText):
+            typ = 'tag'
+            value = s.selectorText
+        else:
+            raise NotImplementedError("'{}' selector type is not implemented".format(s.selectorText))
+        selectors.append(Selector(type=typ, value=value))
+    return selectors
+
+
 def parse_rules(css):
     """ Parse a DSS stylesheet consisting of several declarations block and return a CSS object
         Currently only supports simple selectors (not composed ones like `tag#class`)
@@ -320,20 +338,7 @@ def parse_rules(css):
     rules = []
     for r in css.cssRules:
         if r.type == 1:  # style rule
-            selectors = []
-            for s in r.selectorList:
-                if s.selectorText[0] == "#":
-                    typ = 'id'
-                    value = s.selectorText[1:]
-                elif s.selectorText[0] == '.':
-                    typ = 'class'
-                    value = s.selectorText[1:]
-                elif re.match(r'[\w-]+', s.selectorText):
-                    typ = 'tag'
-                    value = s.selectorText
-                else:
-                    raise NotImplementedError("'{}' selector type is not implemented".format(s.selectorText))
-                selectors.append(Selector(type=typ, value=value))
+            selectors = parse_selectors(r.selectorList)
             properties = parse_properties(r.style)
             rules.append(Rule(selectors=selectors, properties=properties))
     return rules
