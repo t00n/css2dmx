@@ -5,7 +5,9 @@ import cssutils
 import tinycss2
 
 
+# MISC
 def get_timing_function_coefs(function):
+    """ Return the coefficients to express timing functions as a cubic bezier """
     if function.name == 'ease':
         p1, p2 = (0.25, 0.1), (0.25, 1)
     elif function.name == 'ease-in':
@@ -21,10 +23,80 @@ def get_timing_function_coefs(function):
     return p1, p2
 
 
+def parse_ratio(ratio):
+    """ Parse any css property ranging from 0 to 1 """
+    try:
+        res = float(ratio)
+        if res < 0 or res > 1:
+            raise Exception("Expected ratio between 0 and 1, got {}".format(ratio))
+    except ValueError:
+        raise Exception("Expected ratio as float, got {}".format(ratio))
+    return int(res * 255)
+
+
+def parse_time(duration):
+    """ Parse a time value and return a float in seconds
+        Time can be specified in ms or seconds as in CSS
+    """
+    if duration[-2:] == 'ms':
+        return float(duration[:-2]) / 1000
+    elif duration[-1] == 's':
+        return float(duration[:-1])
+    else:
+        raise Exception("Expected a duration, got {}".format(duration))
+
+
+Function = namedtuple('Function', ['name', 'params'])
+
+TIMING_FUNCTIONS = ["ease", "linear", "ease-in", "ease-out", "ease-in-out", "cubic-bezier"]
+
+
+def parse_timing_function(function):
+    """ Parse timing functions (used only in animations at the moment) and return a Function object
+        It can be one of "ease", "linear", "ease-in", "ease-out", "ease-in-out", "cubic-bezier"
+    """
+    if function is None:
+        return Function(name='ease', params=[])
+    match = re.match(r'\A([a-zA-Z-]+)(\(\w+(?:, \w+)*\))?\Z', function)
+    groups = match.groups()
+    if groups[0] is not None and groups[0] in TIMING_FUNCTIONS:
+        name = groups[0]
+        params = [float(x.strip()) for x in groups[1][1:-1].split(',')] if groups[1] is not None else []
+        return Function(name=name, params=params)
+    else:
+        raise Exception("Expected timing function, got '{}'".format(function))
+
+
+def parse_iteration_count(iteration):
+    """ Parse iteration count and return "infinite" or an integer """
+    if iteration == 'infinite':
+        return iteration
+    else:
+        try:
+            return int(iteration)
+        except ValueError:
+            raise Exception("Expected a number or 'infinite' for iteration-count, got {}".format(iteration))
+
+DIRECTIONS = ['normal', 'reverse', 'alternate', 'alternate-reverse']
+
+
+def parse_direction(direction):
+    """ Parse direction (used in animations and pulse) and return a string
+        Direction can be one of 'normal', 'reverse', 'alternate', 'alternate-reverse'
+    """
+    if direction in DIRECTIONS:
+        return direction
+    else:
+        raise Exception("Expected direction, got '{}'".format(direction))
+
+# COLOR
 Color = namedtuple('Color', ['red', 'green', 'blue', 'white', 'alpha', 'name'])
 
 
 def parse_color(color):
+    """ Parse the color DSS property and return a Color object
+        It can be rgb(), rgba(), rgbw(), rgbwa(), #xxx, #xxxxxx or a color name
+    """
     red, green, blue, white, alpha, name = 0, 0, 0, 0, 255, ''
     if color[:5] == "rgbwa":
         splitted = color[6:-1].split(',')
@@ -53,17 +125,8 @@ def parse_color(color):
     return Color(red=red, green=green, blue=blue, white=white, alpha=alpha, name=name)
 
 
-def parse_ratio(ratio):
-    try:
-        res = float(ratio)
-        if res < 0 or res > 1:
-            raise Exception("Expected ratio between 0 and 1, got {}".format(ratio))
-    except ValueError:
-        raise Exception("Expected ratio as float, got {}".format(ratio))
-    return int(res * 255)
-
-
 def parse_strobe(strobe):
+    """ Parse the strobe DSS property and return its speed """
     return parse_ratio(strobe)
 
 
@@ -72,6 +135,9 @@ Pulse = namedtuple('Pulse', ['direction', 'speed'])
 
 
 def parse_pulse(pulse):
+    """ Parse the pulse DSS property and return a Pulse object
+        Pulse contains a direction (see parse_direction) and a speed (see parse_ratio)
+    """
     try:
         direction, speed = [x.strip() for x in pulse.split(" ")]
         direction = parse_direction(direction)
@@ -86,6 +152,9 @@ Auto = namedtuple('Auto', ['name', 'speed'])
 
 
 def parse_auto(auto):
+    """ Parse the auto DSS property and return an Auto object
+        Auto contains a name (any string) and an optional speed (see parse_ratio)
+    """
     try:
         values = [x.strip() for x in auto.split(" ")]
         if len(values) == 1:
@@ -103,6 +172,9 @@ Rotation = namedtuple('Rotation', ['mode', 'position', 'speed'])
 
 
 def parse_rotation(rotation):
+    """ Parse the rotation DSS property and return a Rotation object
+        Rotation contains a mode (manual or auto) and a position/speed depending on the mode
+    """
     values = rotation.split(" ")
     if len(values) == 1:
         position = parse_ratio(values[0])
@@ -115,63 +187,14 @@ def parse_rotation(rotation):
 
 
 # ANIMATION
-def parse_time(duration):
-    if duration[-2:] == 'ms':
-        return float(duration[:-2]) / 1000
-    elif duration[-1] == 's':
-        return float(duration[:-1])
-    else:
-        raise Exception("Expected a duration, got {}".format(duration))
-
-
-def parse_angle(angle):
-    if angle[-3:] == 'deg':
-        return float(angle[:-3])
-    else:
-        raise Exception("Expected an angle, got {}".format(angle))
-
-
-Function = namedtuple('Function', ['name', 'params'])
-
-TIMING_FUNCTIONS = ["ease", "linear", "ease-in", "ease-out", "ease-in-out", "cubic-bezier"]
-
-
-def parse_timing_function(function):
-    if function is None:
-        return Function(name='ease', params=[])
-    match = re.match(r'\A([a-zA-Z-]+)(\(\w+(?:, \w+)*\))?\Z', function)
-    groups = match.groups()
-    if groups[0] is not None and groups[0] in TIMING_FUNCTIONS:
-        name = groups[0]
-        params = [float(x.strip()) for x in groups[1][1:-1].split(',')] if groups[1] is not None else []
-        return Function(name=name, params=params)
-    else:
-        raise Exception("Expected timing function, got '{}'".format(function))
-
-
-def parse_iteration_count(iteration):
-    if iteration == 'infinite':
-        return iteration
-    else:
-        try:
-            return int(iteration)
-        except ValueError:
-            raise Exception("Expected a number or 'infinite' for iteration-count, got {}".format(iteration))
-
-DIRECTIONS = ['normal', 'reverse', 'alternate', 'alternate-reverse']
-
-
-def parse_direction(direction):
-    if direction in DIRECTIONS:
-        return direction
-    else:
-        raise Exception("Expected direction, got '{}'".format(direction))
-
-
 Animation = namedtuple('Animation', ['duration', 'function', 'delay', 'iteration', 'direction'])
 
 
 def parse_animation(value):
+    """ Parse the DSS animation property and return a dict() of animations
+        There can be multiple animations separated by a comma and working the same way as the CSS animation property
+        Support only the "animation" property and not "animation-name", "animation-duration" etc...
+    """
     animations = {}
     for anim in value.split(','):
         anim = anim.strip()
@@ -198,6 +221,7 @@ def parse_animation(value):
     return animations
 
 
+# CSS
 CSS = namedtuple('CSS', ['rules', 'keyframes'])
 Rule = namedtuple('Rule', ['selectors', 'properties'])
 Selector = namedtuple('Selector', ['type', 'value'])
@@ -207,6 +231,7 @@ IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'auto', 'rotation', 'anima
 
 
 def parse_properties(style):
+    """ Parse all implemented DSS properties of a declarations block and return a list of properties """
     properties = []
     for prop in IMPLEMENTED_PROPERTIES:
         if prop in style:
@@ -227,6 +252,10 @@ def parse_properties(style):
 
 
 def parse_rules(css):
+    """ Parse a DSS stylesheet consisting of several declarations block and return a CSS object
+        Currently only supports simple selectors (not composed ones like `tag#class`)
+        Selectors can be tag/id/class-based
+    """
     rules = []
     for r in css.cssRules:
         if r.type == 1:  # style rule
@@ -253,6 +282,9 @@ Keyframe = namedtuple('Keyframe', ['selector', 'properties'])
 
 
 def parse_keyframe_name(prelude):
+    """ Parse @keyframes at-rules names and return it in lower case
+        Only supports one name per keyframe
+    """
     idents = [token for token in prelude if token.type == 'ident']
     if len(idents) != 1:
         raise Exception("Expected exactly one identifier for keyframe, got '{}'".format(prelude))
@@ -260,6 +292,9 @@ def parse_keyframe_name(prelude):
 
 
 def parse_keyframe_frames(content):
+    """ Parse the content of a @keyframes at-rule and return a list of frames sorted by percentage
+        Support percentage and from/to keywords
+    """
     frames = []
     content = [token for token in content if token.type != 'whitespace']
     # goal : alternate between percentage and commas until we come across a rule
@@ -299,6 +334,7 @@ def parse_keyframe_frames(content):
 
 
 def parse_keyframes(css):
+    """ Parse all @keyframes at-rules of a css file and return a dict() """
     keyframes = {}
     for r in css:
         if r.type == 'at-rule' and r.at_keyword == 'keyframes':
@@ -309,6 +345,7 @@ def parse_keyframes(css):
 
 
 def parse_css_file(filename):
+    """ Parse a DSS file """
     css = cssutils.parseFile(filename)
     rules = parse_rules(css)
     with open(filename) as f:
