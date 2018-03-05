@@ -89,8 +89,25 @@ def parse_direction(direction):
     else:
         raise Exception("Expected direction, got '{}'".format(direction))
 
+
 # COLOR
-Color = namedtuple('Color', ['red', 'green', 'blue', 'white', 'alpha', 'name'])
+class Color:
+    def __init__(self, red, green, blue, white=0, alpha=255, name=''):
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.white = white
+        self.alpha = alpha
+        self.name = name
+
+    @staticmethod
+    def interpolate(color1, color2, ratio):
+        if color1.name != '' or color2.name != '':
+            return color1.name
+        newcolor = {}
+        for name in ['red', 'green', 'blue', 'white', 'alpha']:
+            newcolor[name] = getattr(color1, name) + (getattr(color2, name) - getattr(color1, name)) * ratio
+        return Color(**newcolor)
 
 
 def parse_color(color):

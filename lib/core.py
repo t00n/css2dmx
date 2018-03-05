@@ -89,8 +89,43 @@ def compute_dmx(tree, devices, keyframes, t):
     return sorted(dmx, key=lambda x: x[0])
 
 
-def compute_prop_with_ratio(src, target, ratio):
-    return [int(src[i] + (target[i] - src[i]) * ratio) for i in range(len(src))]
+# ANIMATIONS
+def animation_is_reversed(anim, t):
+    anim_reversed = False
+    if anim.direction == 'reverse':
+        anim_reversed = True
+    elif anim.direction == 'alternate':
+        position = (t % (anim.duration * 2)) / anim.duration
+        if position > 1:
+            anim_reversed = True
+    elif anim.direction == 'alternate-reverse':
+        position = (t % (anim.duration * 2)) / anim.duration
+        if position <= 1:
+            anim_reversed = True
+    return anim_reversed
+
+
+def animation_is_on(anim, t):
+    return anim.iteration == 'infinite' or t <= anim.duration * anim.iteration
+
+
+def select_keyframe(frames, t):
+    for f in frames:
+        if f.selector / 100 > t:
+            higher = f
+            break
+        lower = f
+    return lower, higher
+
+
+def compute_ratio(anim, lower_frame, higher_frame, t):
+    lower_selector, higher_selector = lower_frame.selector / 100, higher_frame.selector / 100
+    x0 = (t - lower_selector) / (higher_selector - lower_selector)
+    p1, p2 = get_timing_function_coefs(anim.function)
+    coefs = (0, 0), p1, p2, (1, 1)
+    x = compute_cubic_bezier(p1[0], p2[0], x0)[-1]
+    ratio = de_casteljau(x, coefs)[1]
+    return ratio
 
 
 def compute_animations(animations, keyframes, t):
@@ -102,43 +137,22 @@ def compute_animations(animations, keyframes, t):
         # when delay is positive, we want to play the animation as if we are in the past
         # when delay is negative, we want to play the animation as if it had already begun
         real_t = t - anim.delay
-        anim_reversed = False
-        if anim.direction == 'reverse':
-            anim_reversed = True
-        elif anim.direction == 'alternate':
-            position = (real_t % (anim.duration * 2)) / anim.duration
-            if position > 1:
-                anim_reversed = True
-        elif anim.direction == 'alternate-reverse':
-            position = (real_t % (anim.duration * 2)) / anim.duration
-            if position <= 1:
-                anim_reversed = True
+        anim_reversed = animation_is_reversed(anim, real_t)
         if anim_reversed:
             real_t = anim.duration - (real_t % anim.duration)
-        if anim.iteration == 'infinite' or real_t <= anim.duration * anim.iteration:
+        if animation_is_on(anim, real_t):
             # compute where we are in the animation
             percent_t = (real_t % anim.duration) / anim.duration
             # select the frame we're in
-            frames = keyframes[name].frames
-            for f in frames:
-                selector = f.selector / 100
-                if selector > percent_t:
-                    higher_selector = selector
-                    higher_properties = f.properties
-                    break
-                lower_selector = selector
-                lower_properties = f.properties
-            x0 = (percent_t - lower_selector) / (higher_selector - lower_selector)
-            p1, p2 = get_timing_function_coefs(anim.function)
-            coefs = (0, 0), p1, p2, (1, 1)
-            x = compute_cubic_bezier(p1[0], p2[0], x0)[-1]
-            y = de_casteljau(x, coefs)[1]
-            for low_prop in lower_properties:
-                for high_prop in higher_properties:
+            lower_frame, higher_frame = select_keyframe(keyframes[name].frames, percent_t)
+            # compute the bezier
+            ratio = compute_ratio(anim, lower_frame, higher_frame, percent_t)
+            # apply each property
+            for low_prop in lower_frame.properties:
+                for high_prop in higher_frame.properties:
                     if low_prop.name == high_prop.name:
-                        if low_prop.name == 'color' and low_prop.value.name == '':
-                            value = compute_prop_with_ratio(low_prop.value[:5], high_prop.value[:5], y)
-                            style[low_prop.name] = Color(*value, '')
+                        if low_prop.name == 'color':
+                            style[low_prop.name] = Color.interpolate(low_prop.value, high_prop.value, ratio)
     return style
 
 
