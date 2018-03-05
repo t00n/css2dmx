@@ -337,7 +337,7 @@ def parse_rules(css):
     """
     rules = []
     for r in css.cssRules:
-        if r.type == 1:  # style rule
+        if r.typeString == 'STYLE_RULE':
             selectors = parse_selectors(r.selectorList)
             properties = parse_properties(r.style)
             rules.append(Rule(selectors=selectors, properties=properties))
