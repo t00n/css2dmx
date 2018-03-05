@@ -371,22 +371,21 @@ def parse_keyframe_frames(content):
         if is_percentage:
             if token.type == 'percentage':
                 percentages.append(token.int_value)
-                is_percentage = False
             elif token.type == 'ident':
                 if token.value == 'from':
                     percentages.append(0)
-                    is_percentage = False
                 elif token.value == 'to':
                     percentages.append(100)
-                    is_percentage = False
                 else:
-                    raise Exception("Exception from/to in keyframe, got {}".format(token))
+                    raise Exception("Expected from/to in keyframe, got {}".format(token))
             else:
                 raise Exception("Expected percentage in keyframe, got '{}'".format(token))
+            is_percentage = False
         else:
             # when we encounter a comma, next token must be a percentage
             if token.type == 'literal' and token.value == ',':
                 is_percentage = True
+            # when we encouter a block, we parse it
             elif token.type == '{} block':
                 style = cssutils.parseStyle(" ".join([x.serialize() for x in token.content]))
                 properties = parse_properties(style)
@@ -395,7 +394,7 @@ def parse_keyframe_frames(content):
                 percentages = []
                 is_percentage = True
             else:
-                raise Exception("Expected comma or curly-braces block, got'{}'".format(token))
+                raise Exception("Expected comma or curly-braces block after percentage, got'{}'".format(token))
     return sorted(frames, key=lambda f: f.selector)
 
 

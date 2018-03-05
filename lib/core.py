@@ -1,5 +1,5 @@
 from .utils import compute_cubic_bezier, de_casteljau
-from .css import get_timing_function_coefs, Color
+from .css import get_timing_function_coefs
 
 
 def apply_style_on_dom(tree, css):
@@ -118,10 +118,10 @@ def select_keyframe(frames, t):
     return lower, higher
 
 
-def compute_ratio(anim, lower_frame, higher_frame, t):
+def compute_function_at(function, lower_frame, higher_frame, t):
     lower_selector, higher_selector = lower_frame.selector / 100, higher_frame.selector / 100
     x0 = (t - lower_selector) / (higher_selector - lower_selector)
-    p1, p2 = get_timing_function_coefs(anim.function)
+    p1, p2 = get_timing_function_coefs(function)
     coefs = (0, 0), p1, p2, (1, 1)
     x = compute_cubic_bezier(p1[0], p2[0], x0)[-1]
     ratio = de_casteljau(x, coefs)[1]
@@ -136,17 +136,17 @@ def compute_animations(animations, keyframes, t):
             continue
         # when delay is positive, we want to play the animation as if we are in the past
         # when delay is negative, we want to play the animation as if it had already begun
-        real_t = t - anim.delay
-        anim_reversed = animation_is_reversed(anim, real_t)
+        anim_t = t - anim.delay
+        anim_reversed = animation_is_reversed(anim, anim_t)
         if anim_reversed:
-            real_t = anim.duration - (real_t % anim.duration)
-        if animation_is_on(anim, real_t):
+            anim_t = anim.duration - (anim_t % anim.duration)
+        if animation_is_on(anim, anim_t):
             # compute where we are in the animation
-            percent_t = (real_t % anim.duration) / anim.duration
+            percent_t = (anim_t % anim.duration) / anim.duration
             # select the frame we're in
             lower_frame, higher_frame = select_keyframe(keyframes[name].frames, percent_t)
             # compute the bezier
-            ratio = compute_ratio(anim, lower_frame, higher_frame, percent_t)
+            ratio = compute_function_at(anim.function, lower_frame, higher_frame, percent_t)
             # apply each property
             for low_prop in lower_frame.properties:
                 for high_prop in higher_frame.properties:
