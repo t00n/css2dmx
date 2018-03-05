@@ -23,6 +23,10 @@ def get_timing_function_coefs(function):
     return p1, p2
 
 
+def interpolate(src, target, ratio):
+    return src + (target - src) * ratio
+
+
 def parse_ratio(ratio):
     """ Parse any css property ranging from 0 to 1 """
     try:
@@ -92,7 +96,7 @@ def parse_direction(direction):
 
 # COLOR
 class Color:
-    def __init__(self, red, green, blue, white=0, alpha=255, name=''):
+    def __init__(self, red, green, blue, white, alpha, name=''):
         self.red = red
         self.green = green
         self.blue = blue
@@ -100,13 +104,12 @@ class Color:
         self.alpha = alpha
         self.name = name
 
-    @staticmethod
-    def interpolate(color1, color2, ratio):
-        if color1.name != '' or color2.name != '':
-            return color1.name
+    def interpolate(self, other, ratio):
+        if self.name != '' or other.name != '':
+            return self.name
         newcolor = {}
         for name in ['red', 'green', 'blue', 'white', 'alpha']:
-            newcolor[name] = getattr(color1, name) + (getattr(color2, name) - getattr(color1, name)) * ratio
+            newcolor[name] = interpolate(getattr(self, name), getattr(other, name), ratio)
         return Color(**newcolor)
 
 
@@ -142,13 +145,29 @@ def parse_color(color):
     return Color(red=red, green=green, blue=blue, white=white, alpha=alpha, name=name)
 
 
+# STROBE
+class Strobe:
+    def __init__(self, speed):
+        self.speed = speed
+
+    def interpolate(self, other, ratio):
+        return Strobe(interpolate(self.speed, other.speed, ratio))
+
+
 def parse_strobe(strobe):
     """ Parse the strobe DSS property and return its speed """
-    return parse_ratio(strobe)
+    return Strobe(parse_ratio(strobe))
 
 
 # PULSE
-Pulse = namedtuple('Pulse', ['direction', 'speed'])
+class Pulse:
+    def __init__(self, direction, speed):
+        self.direction = direction
+        self.speed = speed
+
+    def interpolate(self, other, ratio):
+        return Pulse(self.direction,
+                     interpolate(self.speed, other.speed, ratio))
 
 
 def parse_pulse(pulse):
@@ -165,7 +184,14 @@ def parse_pulse(pulse):
 
 
 # AUTO
-Auto = namedtuple('Auto', ['name', 'speed'])
+class Auto:
+    def __init__(self, name, speed):
+        self.name = name
+        self.speed = speed
+
+    def interpolate(self, other, ratio):
+        return Auto(self.name,
+                    interpolate(self.speed, other.speed, ratio))
 
 
 def parse_auto(auto):
@@ -185,7 +211,25 @@ def parse_auto(auto):
 
 
 # ROTATION
-Rotation = namedtuple('Rotation', ['mode', 'position', 'speed'])
+class Rotation:
+    def __init__(self, position=None, speed=None):
+        if position is not None:
+            self.mode = 'manual'
+            self.position = position
+            self.speed = 0
+        elif speed is not None:
+            self.mode = 'auto'
+            self.position = 0
+            self.speed = speed
+        else:
+            raise Exception("Expected at least position or speed for Rotation")
+
+    def interpolate(self, other, ratio):
+        if self.mode == 'manual' and other.mode == 'manual':
+            return Rotation(position=interpolate(self.position, other.position, ratio))
+        elif self.mode == 'auto' and other.mode == 'auto':
+            return Rotation(speed=interpolate(self.speed, other.speed, ratio))
+        return self
 
 
 def parse_rotation(rotation):
@@ -195,10 +239,10 @@ def parse_rotation(rotation):
     values = rotation.split(" ")
     if len(values) == 1:
         position = parse_ratio(values[0])
-        return Rotation(mode='manual', position=position, speed=0)
+        return Rotation(position=position)
     elif len(values) == 2 and values[0] == 'auto':
         speed = parse_ratio(values[1])
-        return Rotation(mode='auto', position=0, speed=speed)
+        return Rotation(speed=speed)
     else:
         raise Exception("Expected rotation as `float` or `auto float`, got {}".format(rotation))
 

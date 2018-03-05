@@ -37,7 +37,7 @@ def compute_dmx_color(color, device, offset):
 
 def compute_dmx_strobe(strobe, device, offset):
     res = []
-    res.append(compute_dmx_value(strobe, device['strobe']['speed'], offset))
+    res.append(compute_dmx_value(strobe.speed, device['strobe']['speed'], offset))
     return res
 
 
@@ -151,8 +151,7 @@ def compute_animations(animations, keyframes, t):
             for low_prop in lower_frame.properties:
                 for high_prop in higher_frame.properties:
                     if low_prop.name == high_prop.name:
-                        if low_prop.name == 'color':
-                            style[low_prop.name] = Color.interpolate(low_prop.value, high_prop.value, ratio)
+                        style[low_prop.name] = low_prop.value.interpolate(high_prop.value, ratio)
     return style
 
 

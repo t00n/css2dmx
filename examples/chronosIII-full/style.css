@@ -3,4 +3,20 @@
 	strobe: 1;
 	pulse: normal 1;
 	auto: fade-transition 1;
+	animation: red2green 5s ease 0s infinite alternate;
+}
+
+@keyframes red2green {
+	0%, 100% {
+		color: rgba(255, 0, 0, 1);
+		strobe: 0;
+		pulse: normal 0;
+		auto: fade-transition 0;
+	}
+	50% {
+		color: rgba(255, 0, 0, 0);
+		strobe: 1;
+		pulse: normal 1;
+		auto: fade-transition 1;
+	}
 }
