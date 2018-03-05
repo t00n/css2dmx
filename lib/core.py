@@ -68,25 +68,23 @@ def compute_dmx_rotation(rotation, device, offset):
     return res
 
 
+COMPUTING_FUNCTIONS = {
+    'color': compute_dmx_color,
+    'strobe': compute_dmx_strobe,
+    'pulse': compute_dmx_pulse,
+    'auto': compute_dmx_auto,
+    'rotation': compute_dmx_rotation
+}
+
+
 def compute_dmx(tree, devices, keyframes, t):
     dmx = []
     for node in tree.walk():
         if node.tag in devices:
             style = compute_style(node, keyframes, t)
             for prop, attrs in style.items():
-                if prop in devices[node.tag]:
-                    dmx_val = []
-                    if prop == "color":
-                        dmx_val = compute_dmx_color(attrs, devices[node.tag], node.offset)
-                    elif prop == "strobe":
-                        dmx_val = compute_dmx_strobe(attrs, devices[node.tag], node.offset)
-                    elif prop == "pulse":
-                        dmx_val = compute_dmx_pulse(attrs, devices[node.tag], node.offset)
-                    elif prop == "auto":
-                        dmx_val = compute_dmx_auto(attrs, devices[node.tag], node.offset)
-                    elif prop == "rotation":
-                        dmx_val = compute_dmx_rotation(attrs, devices[node.tag], node.offset)
-                        (attrs, devices[node.tag], node.offset)
+                if prop in devices[node.tag] and prop in COMPUTING_FUNCTIONS:
+                    dmx_val = COMPUTING_FUNCTIONS[prop](attrs, devices[node.tag], node.offset)
                     dmx.extend(dmx_val)
     return sorted(dmx, key=lambda x: x[0])
 
