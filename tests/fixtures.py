@@ -1,7 +1,7 @@
 import pytest
 import tinycss2
 
-from .css import parse_animation, parse_keyframes
+from lib.css import parse_animation, parse_keyframes
 
 
 @pytest.fixture

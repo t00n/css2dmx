@@ -24,7 +24,7 @@ def get_timing_function_coefs(function):
 
 
 def interpolate(src, target, ratio):
-    return src + (target - src) * ratio
+    return int(src + (target - src) * ratio)
 
 
 def parse_ratio(ratio):
@@ -96,7 +96,7 @@ def parse_direction(direction):
 
 # COLOR
 class Color:
-    def __init__(self, red, green, blue, white, alpha, name=''):
+    def __init__(self, red, green, blue, white=0, alpha=255, name=''):
         self.red = red
         self.green = green
         self.blue = blue
@@ -111,6 +111,13 @@ class Color:
         for name in ['red', 'green', 'blue', 'white', 'alpha']:
             newcolor[name] = interpolate(getattr(self, name), getattr(other, name), ratio)
         return Color(**newcolor)
+
+    def __repr__(self):
+        return "Color(red={}, green={}, blue={}, white={}, alpha={}, name='{}')" \
+               .format(self.red, self.green, self.blue, self.white, self.alpha, self.name)
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
 
 
 def parse_color(color):
