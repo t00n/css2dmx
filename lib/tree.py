@@ -2,12 +2,12 @@ from xml.etree import ElementTree as ET
 
 
 class Node:
-    def __init__(self, tag, *, offset=0, id='', children=[], klass=""):
+    def __init__(self, tag, *, address, id, klass, children):
         self.tag = tag
-        self.offset = offset
+        self.address = address
         self.id = id
-        self.children = children
         self.klass = klass.split(" ")
+        self.children = children
         self.style = {}
 
     def add_style(self, prop, value):
@@ -50,7 +50,7 @@ class Node:
 def parse_node(node):
     children = [parse_node(child) for child in node]
     return Node(node.tag,
-                offset=int(node.attrib.get('offset', 0)),
+                address=int(node.attrib.get('address', 1)),
                 id=node.attrib.get('id', ''),
                 klass=node.attrib.get('class', ''),
                 children=children)

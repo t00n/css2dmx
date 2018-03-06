@@ -10,8 +10,9 @@ def apply_style_on_dom(tree, css):
                     node.add_style(decl.property, decl.value)
 
 
-def compute_dmx_value(css_value, attr_desc, offset):
-    address = attr_desc['chan'] + offset
+def compute_dmx_value(css_value, attr_desc, address):
+    # remove 1 because both address and channel number start at 1 instead of 0
+    address = attr_desc['chan'] + address - 1
     if 'enum' in attr_desc:
         dmx_value = attr_desc['enum'][css_value][0]
     else:
@@ -20,51 +21,51 @@ def compute_dmx_value(css_value, attr_desc, offset):
     return (address, dmx_value)
 
 
-def compute_dmx_color(color, device, offset):
+def compute_dmx_color(color, device, address):
     res = []
     if color.name != '':
-        res.append(compute_dmx_value(color.name, device['color']['name'], offset))
+        res.append(compute_dmx_value(color.name, device['color']['name'], address))
     else:
-        res.append(compute_dmx_value(color.red, device['color']['red'], offset))
-        res.append(compute_dmx_value(color.green, device['color']['green'], offset))
-        res.append(compute_dmx_value(color.blue, device['color']['blue'], offset))
+        res.append(compute_dmx_value(color.red, device['color']['red'], address))
+        res.append(compute_dmx_value(color.green, device['color']['green'], address))
+        res.append(compute_dmx_value(color.blue, device['color']['blue'], address))
         if 'white' in device['color']:
-            res.append(compute_dmx_value(color.white, device['color']['white'], offset))
+            res.append(compute_dmx_value(color.white, device['color']['white'], address))
         if 'alpha' in device['color']:
-            res.append(compute_dmx_value(color.alpha, device['color']['alpha'], offset))
+            res.append(compute_dmx_value(color.alpha, device['color']['alpha'], address))
     return res
 
 
-def compute_dmx_strobe(strobe, device, offset):
+def compute_dmx_strobe(strobe, device, address):
     res = []
-    res.append(compute_dmx_value(strobe.speed, device['strobe']['speed'], offset))
+    res.append(compute_dmx_value(strobe.speed, device['strobe']['speed'], address))
     return res
 
 
-def compute_dmx_pulse(pulse, device, offset):
+def compute_dmx_pulse(pulse, device, address):
     res = []
     direction, speed = pulse.direction, pulse.speed
-    res.append(compute_dmx_value(direction, device['pulse']['direction'], offset))
-    res.append(compute_dmx_value(speed, device['pulse']['speed'], offset))
+    res.append(compute_dmx_value(direction, device['pulse']['direction'], address))
+    res.append(compute_dmx_value(speed, device['pulse']['speed'], address))
     return res
 
 
-def compute_dmx_auto(auto, device, offset):
+def compute_dmx_auto(auto, device, address):
     res = []
     name, speed = auto.name, auto.speed
-    res.append(compute_dmx_value(name, device['auto']['name'], offset))
+    res.append(compute_dmx_value(name, device['auto']['name'], address))
     if 'speed' in device['auto']:
-        res.append(compute_dmx_value(speed, device['auto']['speed'], offset))
+        res.append(compute_dmx_value(speed, device['auto']['speed'], address))
     return res
 
 
-def compute_dmx_rotation(rotation, device, offset):
+def compute_dmx_rotation(rotation, device, address):
     res = []
     mode, position, speed = rotation.mode, rotation.position, rotation.speed
     if mode == 'manual':
-        res.append(compute_dmx_value(position, device['rotation']['position'], offset))
+        res.append(compute_dmx_value(position, device['rotation']['position'], address))
     elif mode == 'auto':
-        res.append(compute_dmx_value(speed, device['rotation']['speed'], offset))
+        res.append(compute_dmx_value(speed, device['rotation']['speed'], address))
     return res
 
 
@@ -84,7 +85,7 @@ def compute_dmx(tree, devices, keyframes, t):
             style = compute_style(node, keyframes, t)
             for prop, attrs in style.items():
                 if prop in devices[node.tag] and prop in COMPUTING_FUNCTIONS:
-                    dmx_val = COMPUTING_FUNCTIONS[prop](attrs, devices[node.tag], node.offset)
+                    dmx_val = COMPUTING_FUNCTIONS[prop](attrs, devices[node.tag], node.address)
                     dmx.extend(dmx_val)
     return sorted(dmx, key=lambda x: x[0])
 

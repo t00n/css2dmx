@@ -1,23 +1,23 @@
 <root>
     <mini-dekker id="mini-dekker" />
-    <fg-led-dd-rgbw id="fg-led-dd-rgbw" offset="9" />
-    <chronosIII id="chronosIII" offset="13" />
+    <fg-led-dd-rgbw id="fg-led-dd-rgbw" address="10" />
+    <chronosIII id="chronosIII" address="14" />
     <node id="imac">
-        <led-ws2811 offset="41" />
-        <led-ws2811 offset="44" />
-        <led-ws2811 offset="47" />
-        <led-ws2811 offset="50" />
-        <led-ws2811 offset="53" />
-        <led-ws2811 offset="56" />
-        <led-ws2811 offset="59" />
-        <led-ws2811 offset="62" />
-        <led-ws2811 offset="65" />
-        <led-ws2811 offset="68" />
-        <led-ws2811 offset="71" />
-        <led-ws2811 offset="74" />
-        <led-ws2811 offset="77" />
-        <led-ws2811 offset="80" />
-        <led-ws2811 offset="83" />
-        <led-ws2811 offset="86" />
+        <led-ws2811 address="42" />
+        <led-ws2811 address="45" />
+        <led-ws2811 address="48" />
+        <led-ws2811 address="51" />
+        <led-ws2811 address="54" />
+        <led-ws2811 address="57" />
+        <led-ws2811 address="60" />
+        <led-ws2811 address="63" />
+        <led-ws2811 address="66" />
+        <led-ws2811 address="69" />
+        <led-ws2811 address="72" />
+        <led-ws2811 address="75" />
+        <led-ws2811 address="78" />
+        <led-ws2811 address="81" />
+        <led-ws2811 address="84" />
+        <led-ws2811 address="87" />
     </node>
 </root>
