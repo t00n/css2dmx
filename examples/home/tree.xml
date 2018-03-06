@@ -1,5 +1,7 @@
 <root>
-    <chronosIII id="chronosIII" />
+    <mini-dekker id="mini-dekker" />
+    <fg-led-dd-rgbw id="fg-led-dd-rgbw" offset="9" />
+    <chronosIII id="chronosIII" offset="13" />
     <node id="imac">
         <led-ws2811 offset="41" />
         <led-ws2811 offset="44" />

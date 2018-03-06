@@ -1,27 +1,28 @@
 #chronosIII {
-	color: rgba(255, 0, 0, 1);
-	animation: redintensity 5s ease 0s infinite alternate;
+	color: rgb(255, 0, 0);
+	strobe: 0.2;
+}
+
+#fg-led-dd-rgbw {
+	color: red-white;
+	strobe: 0.2;
+}
+
+#mini-dekker {
+	color: rgb(255, 0, 0);
+	strobe: 0.2;
 }
 
 #imac {
-	color: rgb(255, 0, 0);
-	animation: breathe 5s ease-in-out 0s infinite alternate;
+       color: rgb(255, 0, 0);
+       animation: breathe 5s ease-in-out 0s infinite alternate;
 }
 
 @keyframes breathe {
-	0%, 100% {
-		color: #000;
-	}
-	50% {
-		color: #fff;
-	}
-}
-
-@keyframes redintensity {
-	0%, 100% {
-		color: rgba(255, 0, 0, 1);
-	}
-	50% {
-		color: rgba(255, 0, 0, 0);
-	}
+   0%, 100% {
+           color: #000;
+   }
+   50% {
+           color: #fff;
+   }
 }
