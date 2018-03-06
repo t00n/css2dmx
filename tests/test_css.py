@@ -1,7 +1,9 @@
 from lib.css import \
     parse_color, \
-    parse_keyframe_frames, \
-    Color
+    Color, \
+    parse_strobe, \
+    Strobe, \
+    parse_keyframe_frames
 
 from .fixtures import *  # NOQA
 
@@ -20,27 +22,31 @@ def test_parse_color():
     assert parse_color('red-white') == Color(0, 0, 0, 0, 255, 'red-white')
 
 
+def test_parse_strobe():
+    assert parse_strobe("0") == Strobe(0)
+
+
 def test_parse_keyframe_frames(keyframe_percentage, keyframe_fromto):
     parsed = parse_keyframe_frames(keyframe_percentage.content)
     assert(parsed[0].selector == 0)
-    assert(parsed[0].properties[0].name == "color")
-    assert(parsed[0].properties[0].value == Color(255, 0, 0, alpha=255))
+    assert(parsed[0].declarations[0].property == "color")
+    assert(parsed[0].declarations[0].value == Color(255, 0, 0, alpha=255))
     assert(parsed[1].selector == 50)
-    assert(parsed[1].properties[0].name == "color")
-    assert(parsed[1].properties[0].value == Color(255, 0, 0, alpha=0))
+    assert(parsed[1].declarations[0].property == "color")
+    assert(parsed[1].declarations[0].value == Color(255, 0, 0, alpha=0))
     assert(parsed[2].selector == 100)
-    assert(parsed[2].properties[0].name == "color")
-    assert(parsed[2].properties[0].value == Color(255, 0, 0, alpha=255))
+    assert(parsed[2].declarations[0].property == "color")
+    assert(parsed[2].declarations[0].value == Color(255, 0, 0, alpha=255))
     parsed = parse_keyframe_frames(keyframe_fromto.content)
     assert(parsed[0].selector == 0)
-    assert(parsed[0].properties[0].name == "color")
-    assert(parsed[0].properties[0].value == Color(255, 0, 0, alpha=255))
+    assert(parsed[0].declarations[0].property == "color")
+    assert(parsed[0].declarations[0].value == Color(255, 0, 0, alpha=255))
     assert(parsed[1].selector == 50)
-    assert(parsed[1].properties[0].name == "color")
-    assert(parsed[1].properties[0].value == Color(255, 0, 0, alpha=0))
+    assert(parsed[1].declarations[0].property == "color")
+    assert(parsed[1].declarations[0].value == Color(255, 0, 0, alpha=0))
     assert(parsed[2].selector == 100)
-    assert(parsed[2].properties[0].name == "color")
-    assert(parsed[2].properties[0].value == Color(255, 0, 0, alpha=255))
+    assert(parsed[2].declarations[0].property == "color")
+    assert(parsed[2].declarations[0].value == Color(255, 0, 0, alpha=255))
 
 
 def test_parse_animation(animation_delay):

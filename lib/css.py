@@ -28,7 +28,7 @@ def interpolate(src, target, ratio):
 
 
 def parse_ratio(ratio):
-    """ Parse any css property ranging from 0 to 1 """
+    """ Parse any css value ranging from 0 to 1 """
     try:
         res = float(ratio)
         if res < 0 or res > 1:
@@ -121,7 +121,7 @@ class Color:
 
 
 def parse_color(color):
-    """ Parse the color DSS property and return a Color object
+    """ Parse the color DSS value and return a Color object
         It can be rgb(), rgba(), rgbw(), rgbwa(), #xxx, #xxxxxx or a color name
     """
     red, green, blue, white, alpha, name = 0, 0, 0, 0, 255, ''
@@ -160,9 +160,15 @@ class Strobe:
     def interpolate(self, other, ratio):
         return Strobe(interpolate(self.speed, other.speed, ratio))
 
+    def __repr__(self):
+        return "Strobe(speed={})".format(self.speed)
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
 
 def parse_strobe(strobe):
-    """ Parse the strobe DSS property and return its speed """
+    """ Parse the strobe DSS value and return its speed """
     return Strobe(parse_ratio(strobe))
 
 
@@ -178,7 +184,7 @@ class Pulse:
 
 
 def parse_pulse(pulse):
-    """ Parse the pulse DSS property and return a Pulse object
+    """ Parse the pulse DSS value and return a Pulse object
         Pulse contains a direction (see parse_direction) and a speed (see parse_ratio)
     """
     try:
@@ -202,7 +208,7 @@ class Auto:
 
 
 def parse_auto(auto):
-    """ Parse the auto DSS property and return an Auto object
+    """ Parse the auto DSS value and return an Auto object
         Auto contains a name (any string) and an optional speed (see parse_ratio)
     """
     try:
@@ -240,7 +246,7 @@ class Rotation:
 
 
 def parse_rotation(rotation):
-    """ Parse the rotation DSS property and return a Rotation object
+    """ Parse the rotation DSS value and return a Rotation object
         Rotation contains a mode (manual or auto) and a position/speed depending on the mode
     """
     values = rotation.split(" ")
@@ -259,7 +265,7 @@ Animation = namedtuple('Animation', ['duration', 'function', 'delay', 'iteration
 
 
 def parse_animation(value):
-    """ Parse the DSS animation property and return a dict() of animations
+    """ Parse the DSS animation value and return a dict() of animations
         There can be multiple animations separated by a comma and working the same way as the CSS animation property
         Support only the "animation" property and not "animation-name", "animation-duration" etc...
     """
@@ -291,16 +297,16 @@ def parse_animation(value):
 
 # CSS
 CSS = namedtuple('CSS', ['rules', 'keyframes'])
-Rule = namedtuple('Rule', ['selectors', 'properties'])
+Rule = namedtuple('Rule', ['selectors', 'declarations'])
 Selector = namedtuple('Selector', ['type', 'value'])
-Property = namedtuple('Property', ['name', 'value'])
+Declaration = namedtuple('Declaration', ['property', 'value'])
 
 IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'auto', 'rotation', 'animation']
 
 
-def parse_properties(style):
-    """ Parse all implemented DSS properties of a declarations block and return a list of properties """
-    properties = []
+def parse_declarations(style):
+    """ Parse all implemented DSS declarations of a declarations block and return a list of declarations """
+    declarations = []
     for prop in IMPLEMENTED_PROPERTIES:
         if prop in style:
             if prop == "color":
@@ -315,8 +321,8 @@ def parse_properties(style):
                 val = parse_animation(style[prop])
             elif prop == "rotation":
                 val = parse_rotation(style[prop])
-            properties.append(Property(name=prop, value=val))
-    return properties
+            declarations.append(Declaration(property=prop, value=val))
+    return declarations
 
 
 def parse_selectors(selector_list):
@@ -346,12 +352,12 @@ def parse_rules(css):
     for r in css.cssRules:
         if r.typeString == 'STYLE_RULE':
             selectors = parse_selectors(r.selectorList)
-            properties = parse_properties(r.style)
-            rules.append(Rule(selectors=selectors, properties=properties))
+            declarations = parse_declarations(r.style)
+            rules.append(Rule(selectors=selectors, declarations=declarations))
     return rules
 
 KeyframeRule = namedtuple('KeyframeRule', ['name', 'frames'])
-Keyframe = namedtuple('Keyframe', ['selector', 'properties'])
+Keyframe = namedtuple('Keyframe', ['selector', 'declarations'])
 
 
 def parse_keyframe_name(prelude):
@@ -395,9 +401,9 @@ def parse_keyframe_frames(content):
             # when we encouter a block, we parse it
             elif token.type == '{} block':
                 style = cssutils.parseStyle(" ".join([x.serialize() for x in token.content]))
-                properties = parse_properties(style)
+                declarations = parse_declarations(style)
                 for perc in percentages:
-                    frames.append(Keyframe(selector=perc, properties=properties))
+                    frames.append(Keyframe(selector=perc, declarations=declarations))
                 percentages = []
                 is_percentage = True
             else:

@@ -10,10 +10,10 @@ class Node:
         self.klass = klass.split(" ")
         self.style = {}
 
-    def add_style(self, name, value):
-        self.style[name] = value
+    def add_style(self, prop, value):
+        self.style[prop] = value
         for c in self.children:
-            c.add_style(name, value)
+            c.add_style(prop, value)
 
     def walk(self):
         yield self

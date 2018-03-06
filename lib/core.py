@@ -6,8 +6,8 @@ def apply_style_on_dom(tree, css):
     for rule in css.rules:
         for selector in rule.selectors:
             for node in tree.select(selector):
-                for prop in rule.properties:
-                    node.add_style(prop.name, prop.value)
+                for decl in rule.declarations:
+                    node.add_style(decl.property, decl.value)
 
 
 def compute_dmx_value(css_value, attr_desc, offset):
@@ -148,10 +148,10 @@ def compute_animations(animations, keyframes, t):
             # compute the bezier
             ratio = compute_function_at(anim.function, lower_frame, higher_frame, percent_t)
             # apply each property
-            for low_prop in lower_frame.properties:
-                for high_prop in higher_frame.properties:
-                    if low_prop.name == high_prop.name:
-                        style[low_prop.name] = low_prop.value.interpolate(high_prop.value, ratio)
+            for low_prop in lower_frame.declarations:
+                for high_prop in higher_frame.declarations:
+                    if low_prop.property == high_prop.property:
+                        style[low_prop.property] = low_prop.value.interpolate(high_prop.value, ratio)
     return style
 
 
