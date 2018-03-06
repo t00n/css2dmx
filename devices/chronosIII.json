@@ -3,61 +3,13 @@
   "mapping": {
     "color": {
       "red": {
-        "chan": 1,
-        "cond": [
-          {
-            "chan": 4,
-            "range": [
-              0,
-              15
-            ]
-          },
-          {
-            "chan": 6,
-            "range": [
-              0,
-              127
-            ]
-          }
-        ]
+        "chan": 1
       },
       "green": {
-        "chan": 2,
-        "cond": [
-          {
-            "chan": 4,
-            "range": [
-              0,
-              15
-            ]
-          },
-          {
-            "chan": 6,
-            "range": [
-              0,
-              127
-            ]
-          }
-        ]
+        "chan": 2
       },
       "blue": {
-        "chan": 3,
-        "cond": [
-          {
-            "chan": 4,
-            "range": [
-              0,
-              15
-            ]
-          },
-          {
-            "chan": 6,
-            "range": [
-              0,
-              127
-            ]
-          }
-        ]
+        "chan": 3
       },
       "alpha": {
         "chan": 7
@@ -74,16 +26,7 @@
     },
     "pulse": {
       "speed": {
-        "chan": 5,
-        "cond": [
-          {
-            "chan": 6,
-            "range": [
-              32,
-              127
-            ]
-          }
-        ]
+        "chan": 5
       },
       "direction": {
         "chan": 6,

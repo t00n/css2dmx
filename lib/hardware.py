@@ -27,27 +27,11 @@ range_schema = {
     ]
 }
 
-cond_schema = {
-    "type": "array",
-    "items": {
-        "type": "object",
-        "properties": {
-            "chan": address_schema,
-            "range": range_schema
-        },
-        "required": [
-            "chan",
-            "range"
-        ]
-    }
-}
-
 channel_schema = {
     "type": "object",
     "properties": {
         "chan": address_schema,
-        "range": range_schema,
-        "cond": cond_schema
+        "range": range_schema
     },
     "required": [
         "chan"
