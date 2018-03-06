@@ -303,26 +303,22 @@ Rule = namedtuple('Rule', ['selectors', 'declarations'])
 Selector = namedtuple('Selector', ['type', 'value'])
 Declaration = namedtuple('Declaration', ['property', 'value'])
 
-IMPLEMENTED_PROPERTIES = ['color', 'strobe', 'pulse', 'auto', 'rotation', 'animation']
+PROPERTIES_PARSING_FUNCTIONS = {
+    'color': parse_color,
+    'strobe': parse_strobe,
+    'pulse': parse_pulse,
+    'auto': parse_auto,
+    'rotation': parse_rotation,
+    'animation': parse_animation
+}
 
 
 def parse_declarations(style):
     """ Parse all implemented DSS declarations of a declarations block and return a list of declarations """
     declarations = []
-    for prop in IMPLEMENTED_PROPERTIES:
+    for prop, func in PROPERTIES_PARSING_FUNCTIONS.items():
         if prop in style:
-            if prop == "color":
-                val = parse_color(style[prop])
-            elif prop == "strobe":
-                val = parse_strobe(style[prop])
-            elif prop == "pulse":
-                val = parse_pulse(style[prop])
-            elif prop == "auto":
-                val = parse_auto(style[prop])
-            elif prop == "animation":
-                val = parse_animation(style[prop])
-            elif prop == "rotation":
-                val = parse_rotation(style[prop])
+            val = func(style[prop])
             declarations.append(Declaration(property=prop, value=val))
     return declarations
 
