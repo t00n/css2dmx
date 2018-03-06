@@ -1,5 +1,6 @@
 from collections import namedtuple
 import re
+from abc import ABC, abstractmethod
 
 import cssutils
 import tinycss2
@@ -94,8 +95,22 @@ def parse_direction(direction):
         raise Exception("Expected direction, got '{}'".format(direction))
 
 
+class Value(ABC):
+    @abstractmethod
+    def interpolate(self, other, ratio):
+        pass
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        attributes = ", ".join(["{}={}".format(n, v) for n, v in self.__dict__.items()])
+        return "{}({})".format(name, attributes)
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+
 # COLOR
-class Color:
+class Color(Value):
     def __init__(self, red, green, blue, white=0, alpha=255, name=''):
         self.red = red
         self.green = green
@@ -111,13 +126,6 @@ class Color:
         for name in ['red', 'green', 'blue', 'white', 'alpha']:
             newcolor[name] = interpolate(getattr(self, name), getattr(other, name), ratio)
         return Color(**newcolor)
-
-    def __repr__(self):
-        return "Color(red={}, green={}, blue={}, white={}, alpha={}, name='{}')" \
-               .format(self.red, self.green, self.blue, self.white, self.alpha, self.name)
-
-    def __eq__(self, other):
-        return self.__dict__ == other.__dict__
 
 
 def parse_color(color):
@@ -153,18 +161,12 @@ def parse_color(color):
 
 
 # STROBE
-class Strobe:
+class Strobe(Value):
     def __init__(self, speed):
         self.speed = speed
 
     def interpolate(self, other, ratio):
         return Strobe(interpolate(self.speed, other.speed, ratio))
-
-    def __repr__(self):
-        return "Strobe(speed={})".format(self.speed)
-
-    def __eq__(self, other):
-        return self.__dict__ == other.__dict__
 
 
 def parse_strobe(strobe):
@@ -173,7 +175,7 @@ def parse_strobe(strobe):
 
 
 # PULSE
-class Pulse:
+class Pulse(Value):
     def __init__(self, direction, speed):
         self.direction = direction
         self.speed = speed
@@ -197,7 +199,7 @@ def parse_pulse(pulse):
 
 
 # AUTO
-class Auto:
+class Auto(Value):
     def __init__(self, name, speed):
         self.name = name
         self.speed = speed
@@ -224,7 +226,7 @@ def parse_auto(auto):
 
 
 # ROTATION
-class Rotation:
+class Rotation(Value):
     def __init__(self, position=None, speed=None):
         if position is not None:
             self.mode = 'manual'
